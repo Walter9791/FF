@@ -16,7 +16,7 @@ class UserAdmin(admin.ModelAdmin):              # Create a class that inherits f
 class ProfileAdmin(admin.ModelAdmin):           # Create a class that inherits from the ModelAdmin class 
     list_display = ('user', 'first_name', 'last_name', 'bio', 'avatar', 'verified')
     search_fields = ('user', 'first_name', 'last_name')
-    readonly_fields = ('id',)
+    readonly_fields = ('id', 'user', 'avatar', 'verified')
 
     filter_horizontal = ()
     list_filter = ()

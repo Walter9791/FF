@@ -13,8 +13,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
     def profile (self):
-        profile = Profile.objects.get(user=self)
-        return self.profile
+        return Profile.objects.get(user=self)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
