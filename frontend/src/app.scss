@@ -33,7 +33,7 @@ h1
     font-family: 'Lato', sans-serif;
     font-size: 2rem;
     font-weight: 900;
-    color: $dark-color;
+    color: $soft-bg;
     text-align: center;
     margin-bottom: .1rem;
     text-transform: uppercase;
@@ -44,7 +44,7 @@ span
     font-size: 1rem;
 }
 
-.App {
+.app {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -54,7 +54,7 @@ span
     color: $main-color;
     font-size: 1.5rem;
 
-    .container {
+    .layout-container {
         width: 100%;
         max-width: 600px;
         padding: 2rem;
@@ -106,3 +106,66 @@ form{
         }
     }
 }
+
+.navigation {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    height: 2rem;
+    background-color: #333;
+    list-style: upper-alpha;   
+  }
+  .nav-items {
+    display: flex;
+  }
+  
+  .nav-items a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0 1rem;
+  }
+  
+  .nav-items.left {
+    flex: 1;
+    justify-content: flex-start;
+  }
+  
+  .nav-items.right {
+    flex: 1;
+    justify-content: flex-end;
+  }
+  
+  .nav-items a:hover {
+    text-decoration: underline;
+  }
+
+footer {
+    position: relative;
+    width: 100%;
+    background-color: #b8b9c3;
+    color: rgb(0, 0, 0);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: border-box;
+  
+    .leftFooter,
+    .midFooter,
+    .rightFooter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+  
+      h4, h1 {
+        margin: 0.5rem 0;
+        font-size: 1.2rem;
+      }
+  
+      p {
+        margin: 0.5rem 0;
+        font-size: 1rem;
+      }
+    }
+  }

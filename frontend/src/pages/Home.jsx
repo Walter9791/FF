@@ -2,6 +2,7 @@ import { jwtDecode } from 'jwt-decode'
 import React, {useContext} from 'react'
 import AuthContext from "../context/authContext"
 import { Link } from 'react-router-dom'
+import Layout from '../components/layout'
 
 const Home = () => {
   const {user, logoutUser} = useContext(AuthContext)
@@ -14,6 +15,7 @@ const Home = () => {
   }
 
   return (
+    <Layout>
     <div className='Home'>
       <h1>Homepage</h1>
       <p>This is the Homepage</p>
@@ -38,6 +40,7 @@ const Home = () => {
         </>
       }
     </div>
+  </Layout>  
   )
 }
 

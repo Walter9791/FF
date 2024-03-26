@@ -3,7 +3,7 @@ import useAxios from "../utils/useAxios"
 import { jwtDecode } from 'jwt-decode'
 import { Link } from 'react-router-dom'
 import AuthContext from '../context/authContext'
-
+import Layout from '../components/layout'
 
 const Dashboard = () => {
   const [response, setResponse] = useState("")
@@ -38,6 +38,7 @@ const Dashboard = () => {
   
 
   return (
+    <Layout>
     <div className='profile'>
       <h1>PROFILE</h1>
       <p>Welcome, {username}</p>
@@ -55,9 +56,10 @@ const Dashboard = () => {
       <br /><br />
       <Link to="/">Home</Link>
       <br />
-      <Link onClick={logoutUser}>Logout</Link>
+      <Link to="/" onClick={logoutUser}>Logout</Link>
       
     </div>
+    </Layout>
   )
 }
 
