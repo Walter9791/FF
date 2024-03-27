@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import AuthContext from '../context/authContext'
 import Layout from '../components/layout'
 
-const Profile = () => {
+const Leagues = () => {
   const [response, setResponse] = useState("")
   const api = useAxios();
   const token = localStorage.getItem("authTokens")
@@ -15,9 +15,6 @@ const Profile = () => {
   const decode = jwtDecode(token)
   console.log(decode)
   let username = decode.username
-  let email = decode.email
-  let first_name = decode.first_name
-  let last_name = decode.last_name
   
 
   useEffect(() => {
@@ -40,27 +37,19 @@ const Profile = () => {
   return (
     <Layout>
     <div className='profile'>
-      <h1>PROFILE</h1>
-      <p>Welcome, {username}</p>
+      <h1>Leagues for {username}</h1>
       <span>Your Information:</span>
       <br />
       <span>Username: {username}</span>
       <br />
-      <span>First Name: {first_name}</span>
-      <br />
-      <span>Last Name: {last_name}</span>
-      <br />
-      <span>Email: {email}</span>
-      <br /><br />
       <span>{response}</span>
-      <br /><br />
+      <br />
       <Link to="/">Home</Link>
       <br />
-      <Link to="/" onClick={logoutUser}>Logout</Link>
-      
+      <Link to="/" onClick={logoutUser}>Logout</Link>      
     </div>
     </Layout>
   )
 }
 
-export default Profile
+export default Leagues
