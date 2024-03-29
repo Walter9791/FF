@@ -4,7 +4,7 @@ import './app.scss'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './utils/protectedRoutes'  
 import { AuthProvider } from './context/authContext'
-import { Home, Login, Signup, Profile, About, Leagues } from './pages'
+import { Home, Login, Signup, Profile, About, CreateLeagues, JoinLeagues } from './pages'
 
 const App = () => {
   return (
@@ -20,10 +20,14 @@ const App = () => {
                             <ProtectedRoute>
                                 <Profile />
                             </ProtectedRoute>} />
-                            <Route path='/leagues' element={
+                        <Route path='/create-league' element={
                             <ProtectedRoute>
-                                <Leagues />
-                            </ProtectedRoute>} />                        
+                                <CreateLeagues />
+                            </ProtectedRoute>} />
+                        <Route path='/join-league' element={
+                            <ProtectedRoute>
+                                <JoinLeagues />
+                            </ProtectedRoute>} />                         
                     </Routes>
                 </AuthProvider>    
             </Router>            

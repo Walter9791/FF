@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'corsheaders',
     'rest_framework_simplejwt',
+    'leagues.apps.LeagueConfig',
 ]
 
 MIDDLEWARE = [

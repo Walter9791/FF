@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
                 icon: "success",
                 toast: true,
                 timer: 4000,
-                position: 'top-right',
+                position: 'bottom-right',
                 timerProgressBar: false,
                 showConfirmButton: false
             })
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
                 icon: "success",
                 toast: true,
                 timer: 4000,
-                position: 'top-right',
+                position: 'bottom-right',
                 timerProgressBar: false,
                 showConfirmButton: false
             })
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
                 icon: "error",
                 toast: true,
                 timer: 4000,
-                position: 'top-right',
+                position: 'bottom-right',
                 timerProgressBar: false,
                 showConfirmButton: false
             })
@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }) => {
             icon: "success",
             toast: true,
             timer: 4000,
-            position: 'top-right',
+            position: 'bottom-right',
             timerProgressBar: false,
             showConfirmButton: false
         })
