@@ -22,18 +22,27 @@ class LeagueDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = LeagueSerializer
 
 @api_view(['POST'])
-def send_join_request(request, league_id):
+def send_join_request(request, pk):
     try:
-        league = League.objects.get(pk=league_id)
+        league = League.objects.get(pk=pk)  # Corrected line
     except League.DoesNotExist:
         return Response({"error": "League does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
     # Create a join request
-    serializer = JoinRequestSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save(league=league, user=request.user)
+    # Assuming 'message' can be included from the frontend, it should be handled here.
+    initial_data = {
+        'league': league.pk,
+        'user': request.user.pk,
+        'message': request.data.get('message', ''),  # Optional message
+        'status': 'pending'  # Set status to 'pending' explicitly
+    }
+
+    serializer = JoinRequestSerializer(data=initial_data, context={'request': request})
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def approve_join_request(request, join_request_id):

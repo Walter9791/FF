@@ -8,6 +8,7 @@ const JoinLeague = () => {
   const [leagues, setLeagues] = useState([]);
   const [error, setError] = useState('');
   const api = useAxios();
+  const [joinRequestStatuses, setJoinRequestStatuses] = useState({});
 
   // Fetch leagues from the backend
   useEffect(() => {
@@ -26,8 +27,12 @@ const JoinLeague = () => {
   const handleJoinRequest = async (leagueId) => {
     try {
       // Include userr authentication as equired
-      const response = await axios.post(`/api/leagues/${leagueId}/join-request`);
+      const response = await api.post(`/leagues/join/${leagueId}/`, {message: "I would like to join this league."});
       alert('Join request sent successfully');
+      setJoinRequestStatuses(prevStatuses => ({
+        ...prevStatuses,
+        [leagueId]: 'pending'
+      }));
     } catch (error) {
       console.error('Failed to send join request:', error);
       alert('Failed to send join request');
@@ -42,7 +47,12 @@ const JoinLeague = () => {
         {leagues.map((league) => (
           <li key={league.id}>
             {league.name} - {league.description}
-            <button onClick={() => handleJoinRequest(league.id)}>Join League</button>
+            {joinRequestStatuses[league.id] === 'pending' ? (
+              <span>Request Pending</span>
+            ) : (
+              <button onClick={() => handleJoinRequest(league.id)}>Join League</button>
+            )}
+            {/* <button onClick={() => handleJoinRequest(league.id)}>Join League</button> */}
           </li>
         ))}
       </ul>
