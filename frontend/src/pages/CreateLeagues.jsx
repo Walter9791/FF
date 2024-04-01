@@ -13,36 +13,46 @@ const CreateLeague = () => {
   const [leaguePassword, setLeaguePassword] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
-//   const [passwords, setPasswords] = useState({});
- 
-
+  const [isPublic, setIsPublic] = useState(true); // Default to public
   const api = useAxios();
 
 
-  // Handle league creation
   const handleCreateLeague = async (e) => {
     e.preventDefault();
-    try {
-      const response = await api.post("/leagues/", {
+    const payload = {
         name: leagueName,
-        owners_count: ownersCount,
+        owners_count: parseInt(ownersCount, 10),
         description: description,
-        commissioner: 1,
-        password: leaguePassword,
-      });
+        is_public: isPublic,
+        // league_password: leaguePassword,
+    };
+
+    // Only add password to payload if the league is private
+    if (!isPublic && leaguePassword) {
+        payload.league_password = leaguePassword;
+    }
+
+    try {
+      console.log("Sending payload:", payload);
+      const response = await api.post("/leagues/", payload);
       setLeagues([...leagues, response.data]);
+      // Reset form fields
       setLeagueName('');
       setOwnersCount('');
       setDescription('');
       setLeaguePassword('');
+      setIsPublic(true); // Reset to default public
       setSuccessMessage("League created successfully!");
       setError("");
-      navigate('/about'); //this will be the My Leagues Page when it is built
+      navigate('/my-leagues'); // Assuming this is the correct path
     } catch (err) {
       console.error("Error creating league:", err);
       setError("Error creating the league. Please try again.");
     }
-  };
+};
+
+
+ 
 
   return (
     <Layout>
@@ -67,12 +77,18 @@ const CreateLeague = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
             />
-            <input
-                type="password" 
-                placeholder="League Password"
-                value={leaguePassword}
-                onChange={(e) => setLeaguePassword(e.target.value)}
-            />
+            <select value={isPublic ? "public" : "private"} onChange={(e) => setIsPublic(e.target.value === "public")}>
+                    <option value="public">Public League</option>
+                    <option value="private">Private League</option>
+                </select>
+                {!isPublic && (
+                    <input
+                        type="password" 
+                        placeholder="League Password"
+                        value={leaguePassword}
+                        onChange={(e) => setLeaguePassword(e.target.value)}
+                    />
+                )}
             <button type="submit">Create League</button>
             {error && <p className="error">{error}</p>}
             {successMessage && <p className="success">{successMessage}</p>}
@@ -83,3 +99,31 @@ const CreateLeague = () => {
 }
 
 export default CreateLeague;        
+
+
+
+
+ // // Handle league creation
+  // const handleCreateLeague = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await api.post("/leagues/", {
+  //       name: leagueName,
+  //       owners_count: ownersCount,
+  //       description: description,
+  //       commissioner: 1,
+  //       password: leaguePassword,
+  //     });
+  //     setLeagues([...leagues, response.data]);
+  //     setLeagueName('');
+  //     setOwnersCount('');
+  //     setDescription('');
+  //     setLeaguePassword('');
+  //     setSuccessMessage("League created successfully!");
+  //     setError("");
+  //     navigate('/about'); //this will be the My Leagues Page when it is built
+  //   } catch (err) {
+  //     console.error("Error creating league:", err);
+  //     setError("Error creating the league. Please try again.");
+  //   }
+  // };

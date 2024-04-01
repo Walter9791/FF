@@ -11,28 +11,28 @@ class League(models.Model):
     member = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='league_member')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_public = models.BooleanField(default=True)  # New field to indicate if the league is public
+    league_password = models.CharField(max_length=128, blank=True, null=True)  # New field for storing league password
+    
 
     def __str__(self):
         return self.name
     
-    def send_join_request(self, user, message=''):
-        # Check if the user has already sent a request
-        existing_request = JoinRequest.objects.filter(user=user, league=self).first()
-        if existing_request:
-            return False, "You have already sent a join request for this league."
+    def set_password(self, raw_password):
+        self.league_password = make_password(raw_password)
+        self.save()
 
-        # Create a new join request
-        JoinRequest.objects.create(user=user, league=self, message=message, status='pending')
-        return True, "Join request sent successfully."
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.league_password)
     
     
-class JoinRequest(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    league = models.ForeignKey('League', on_delete=models.CASCADE)
-    message = models.TextField(blank=True)
-    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')])
-    created_at = models.DateTimeField(auto_now_add=True)
+# class JoinRequest(models.Model):
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+#     league = models.ForeignKey('League', on_delete=models.CASCADE)
+#     message = models.TextField(blank=True)
+#     status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')])
+#     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Join Request from {self.user.username} for {self.league.name}"
+#     def __str__(self):
+#         return f"Join Request from {self.user.username} for {self.league.name}"
     

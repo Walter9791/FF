@@ -8,9 +8,8 @@ const JoinLeague = () => {
   const [leagues, setLeagues] = useState([]);
   const [error, setError] = useState('');
   const api = useAxios();
-  const [joinRequestStatuses, setJoinRequestStatuses] = useState({});
+  const [leaguePassword, setLeaguePassword] = useState({}); // For storing passwords for private leagues
 
-  // Fetch leagues from the backend
   useEffect(() => {
     const fetchLeagues = async () => {
       try {
@@ -21,53 +20,136 @@ const JoinLeague = () => {
         setError("Error fetching leagues. Please try again later.");
       }
     };
+  
     fetchLeagues();
   }, []);
 
-  const handleJoinRequest = async (leagueId) => {
+  const handleJoinLeague = async (league) => {
+    const payload = league.isPublic ? {} : { password: leaguePassword[league.id] };
+  
     try {
-      // Include userr authentication as equired
-      const response = await api.post(`/leagues/join/${leagueId}/`, {message: "I would like to join this league."});
-      alert('Join request sent successfully');
-      setJoinRequestStatuses(prevStatuses => ({
-        ...prevStatuses,
-        [leagueId]: 'pending'
-      }));
+      await api.post(`/leagues/join/${league.id}/`, payload);
+      alert('Successfully joined the league');
+      // Update UI or state as needed to reflect the successful join
     } catch (error) {
-      console.error('Failed to send join request:', error);
-      alert('Failed to send join request');
+      console.error('Failed to join league:', error);
+      alert('Failed to join league. Check the password for private leagues.');
     }
   };
-
+  
   return (
     <Layout>
-    <div>
-      <h2>Leagues</h2>
-      <ul>
-        {leagues.map((league) => (
-          <li key={league.id}>
-            {league.name} - {league.description}
-            {joinRequestStatuses[league.id] === 'pending' ? (
-              <span>Request Pending</span>
-            ) : (
-              <button onClick={() => handleJoinRequest(league.id)}>Join League</button>
-            )}
-            {/* <button onClick={() => handleJoinRequest(league.id)}>Join League</button> */}
-          </li>
-        ))}
-      </ul>
-    </div>
+      <div>
+        <h2>Leagues</h2>
+        <ul>
+          {leagues.map((league) => (
+            <li key={league.id}>
+              {league.name} - {league.description}
+              {league.isPublic ? (
+                <button onClick={() => handleJoinLeague(league)}>Join League</button>
+              ) : (
+                <div>
+                  <input 
+                    type="password" 
+                    placeholder="League Password" 
+                    onChange={(e) => setLeaguePassword({ ...leaguePassword, [league.id]: e.target.value })} 
+                  />
+                  <button onClick={() => handleJoinLeague(league)}>Join Private League</button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
     </Layout>
   );
 };
-
 export default JoinLeague;
 
 
+//   useEffect(() => {
+//     const fetchLeaguesAndStatuses = async () => {
+//       try {
+//         const leaguesResponse = await api.get("/leagues/");
+//         // const statusesResponse = await api.get("/leagues/join-request-statuses/");
+//         const statuses = statusesResponse.data;
+  
+//         // Combine league data with join request statuses
+//         const updatedLeagues = leaguesResponse.data.map(league => ({
+//           ...league,
+//           joinStatus: statuses[league.id] || 'not_requested'
+//         }));
+  
+//         setLeagues(updatedLeagues);
+//       } catch (err) {
+//         console.error("Error fetching data:", err);
+//         setError("Error fetching data. Please try again later.");
+//       }
+//     };
+  
+//     fetchLeaguesAndStatuses();
+//   }, []);
+
+//   const handleJoinRequest = async (leagueId) => {
+//     try {
+//       // Include userr authentication as equired
+//       const response = await api.post(`/leagues/join/${leagueId}/`, {message: "I would like to join this league."});
+//       alert('Join request sent successfully');
+//       setJoinRequestStatuses(prevStatuses => ({
+//         ...prevStatuses,
+//         [leagueId]: 'pending'
+//       }));
+//     } catch (error) {
+//       console.error('Failed to send join request:', error);
+//       alert('Failed to send join request');
+//     }
+//   };
+
+//   return (
+//     <Layout>
+//     <div>
+//       <h2>Leagues</h2>
+//       <ul>
+//         {leagues.map((league) => (
+//           <li key={league.id}>
+//             {league.name} - {league.description}
+//             {(joinRequestStatuses[league.id] === 'pending' || league.joinStatus === 'pending') ? (
+//                 <span>Request Pending</span>
+//                 ) : (
+//               <button onClick={() => handleJoinRequest(league.id)}>Join League</button>
+//             )}
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//     </Layout>
+//   );
+// };
+
+// export default JoinLeague;
 
 
 
 
+
+
+
+
+
+
+  // Fetch leagues from the backend
+//   useEffect(() => {
+//     const fetchLeagues = async () => {
+//       try {
+//         const response = await api.get("/leagues/");
+//         setLeagues(response.data);
+//       } catch (err) {
+//         console.error("Error fetching leagues:", err);
+//         setError("Error fetching leagues. Please try again later.");
+//       }
+//     };
+//     fetchLeagues();
+//   }, []);
 
 
 // import React, { useState, useEffect, useContext } from 'react';
@@ -139,8 +221,3 @@ export default JoinLeague;
 // };
 
 // export default League;
-
-
-
-
-    
