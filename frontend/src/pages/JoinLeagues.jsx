@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import useAxios from "../utils/useAxios";
-
 import Layout from '../components/layout';
 
 const JoinLeague = () => {
@@ -26,13 +25,21 @@ const JoinLeague = () => {
 
   const handleJoinLeague = async (league) => {
     const payload = league.isPublic ? {} : { password: leaguePassword[league.id] };
-  
+    console.log('Joining league with ID:', league.id);
+    console.log('Payload:', payload);
+
+
     try {
-      await api.post(`/leagues/join/${league.id}/`, payload);
+      const response = await api.post(`/leagues/join/${league.id}/`, payload);
+      console.log('Response:', response);
       alert('Successfully joined the league');
       // Update UI or state as needed to reflect the successful join
     } catch (error) {
       console.error('Failed to join league:', error);
+      if (error.response) {
+        console.error('Server responded with status:', error.response.status);
+        console.error('Server response data:', error.response.data);
+      }
       alert('Failed to join league. Check the password for private leagues.');
     }
   };

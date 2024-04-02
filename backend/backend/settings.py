@@ -192,11 +192,8 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
-    'loggers': {
-        '': {  # '' denotes the root logger
-            'handlers': ['console'],
-            'level': 'DEBUG',  # Adjust as needed
-            'propagate': True,
-        },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
     },
 }

@@ -1,11 +1,10 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import LeagueSerializer
+from .serializers import LeagueSerializer, JoinLeagueSerializer 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import LeagueSerializer
 from django.db.models import Q
 from .models import League
 import logging
@@ -33,48 +32,14 @@ class LeagueListCreate(generics.ListCreateAPIView):
             logger.error(f"League creation errors: {e}")
             return Response({'error': 'League creation failed'}, status=400)
         
-    
-        # # First, validate the serializer
-        # if serializer.is_valid():
-        #     # Save the instance if the data is valid, passing 'commissioner' explicitly
-        #     serializer.save(commissioner=request.user)
-        #     # Optionally, you can add the commissioner as a member here or inside the serializer's save method
-            
-        #     # Return a success response
-        #     headers = self.get_success_headers(serializer.data)
-        #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        # else:
-        #     # Log and return any validation errors if the data is not valid
-        #     logger.error(f"League creation errors: {serializer.errors}")
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class JoinLeagueView(generics.CreateAPIView):
+    serializer_class = JoinLeagueSerializer
 
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.save(commissioner=self.request.user) 
-
-    #     if not serializer.is_valid():
-    #         logger.error(f"League creation errors: {serializer.errors}")
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     self.perform_create(serializer)
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-@api_view(['POST'])
-def join_league(request, league_id):
-    try:
-        league = League.objects.get(pk=league_id)
-        if not league.is_public:
-            password = request.data.get('password')
-            if not password or not league.check_password(password):
-                return Response({'error': 'Incorrect password'}, status=400)
-        
-        league.member.add(request.user)
-        return Response({'success': 'Joined league successfully'})
-    except League.DoesNotExist:
-        return Response({'error': 'League does not exist'}, status=404)
+    def create(self, request, *args, **kwargs):
+        logger.info('Received request to join league')
+        logger.info('Request data: %s', request.data)
+        return super().create(request, *args, **kwargs)
 
 
 

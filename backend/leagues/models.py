@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
 
+############################# League Model ###############################################
 
 class League(models.Model):
     name = models.CharField(max_length=100)
@@ -26,13 +27,58 @@ class League(models.Model):
         return check_password(raw_password, self.league_password)
     
     
-# class JoinRequest(models.Model):
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-#     league = models.ForeignKey('League', on_delete=models.CASCADE)
-#     message = models.TextField(blank=True)
-#     status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')])
-#     created_at = models.DateTimeField(auto_now_add=True)
 
-#     def __str__(self):
-#         return f"Join Request from {self.user.username} for {self.league.name}"
+
+############################# Team Model ###############################################
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=100, unique=False)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL,
+        null=True, 
+        blank=True, 
+        related_name='teams'
+    )
+    league = models.ForeignKey(
+        'League', 
+        on_delete=models.CASCADE, 
+        related_name='teams'
+    )
+
+    def __str__(self):
+        return self.name
     
+
+
+    ############################# Matchup Model ###############################################
+
+
+class Matchup(models.Model):
+    week = models.IntegerField()
+    league = models.ForeignKey(
+        'League', 
+        on_delete=models.CASCADE, 
+        related_name='matchups'
+    )
+    home_team = models.ForeignKey(
+        Team, 
+        on_delete=models.CASCADE, 
+        related_name='home_matchups',
+        null=True,
+        blank=True
+    )
+    away_team = models.ForeignKey(
+        Team, 
+        on_delete=models.CASCADE, 
+        related_name='away_matchups',
+        null=True,
+        blank=True
+    )
+    home_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    away_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Week {self.week}: {self.home_team} vs. {self.away_team}"
