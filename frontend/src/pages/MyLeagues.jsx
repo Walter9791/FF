@@ -9,22 +9,6 @@ const MyLeagues = () => {
   const [error, setError] = useState('');
   const api = useAxios();
 
-//   useEffect(() => {
-//     const fetchLeaguesData = async () => {
-//       try {
-//         const pendingResponse = await api.get("/leagues/join-request-statuses/");
-//         console.log(pendingResponse.data);
-//         setPendingLeagues(pendingResponse.data);
-
-//       } catch (err) {
-//         console.error("Error fetching leagues data:", err);
-//         setError("Error fetching data. Please try again later.");
-//       }
-// //     };
-
-//     fetchLeaguesData();
-//   }, []);
-
   useEffect(() => {
     const fetchJoinedLeagues = async () => {
       try {

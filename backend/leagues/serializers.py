@@ -5,6 +5,10 @@ from django.db import transaction
 from itertools import combinations
 from django.contrib.auth.hashers import check_password
 import logging
+import random
+
+
+
 
 logger = logging.getLogger(__name__)    
 
@@ -15,7 +19,34 @@ class LeagueSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'commissioner', 'owners_count', 'member','is_public', 'league_password', 'description', 'created_at', 'updated_at']
         extra_kwargs = {'league_password': {'write_only': True, 'required': False},
                         'commissioner': {'read_only': True},
-                        }   
+                        } 
+        
+    @staticmethod
+    def create_schedule(league):
+        print("schedule for league:", league.name)
+        teams = list(league.teams.all())
+        print(f"{len(teams)} teams in league {league.name}")
+        
+        weeks = 15 
+        matchups_per_week = len(teams) // 2
+
+        with transaction.atomic():
+            try:
+                for week in range(1, weeks + 1):
+                    random.shuffle(teams) 
+                    for i in range(matchups_per_week):
+                        home_team = teams[i * 2] 
+                        away_team = teams[i * 2 + 1] ##if i * 2 + 1 < len(teams) else None --- not sure if needed 
+                        if away_team:
+                            print(f"Week {week}: {home_team.name} vs {away_team.name}") 
+                            Matchup.objects.create(
+                                week=week,
+                                league=league,
+                                home_team=home_team,
+                                away_team=away_team
+                            )   
+            except Exception as e:
+                logger.error(f"Error creating schedule: {e}")    
 
     def validate(self, attrs):
         is_public = attrs.get('is_public', True)
@@ -27,48 +58,36 @@ class LeagueSerializer(serializers.ModelSerializer):
     
 
     def create(self, validated_data):
-        # Pop 'league_password' from validated_data since it's handled separately
+    # Pop 'league_password' from validated_data since it's handled separately
         league_password = validated_data.pop('league_password', None)
         owners_count = validated_data.get('owners_count')
+        request = self.context.get('request')
 
-        with transaction.atomic():
-        
         # Create the league instance including the 'commissioner' directly
-            league = League.objects.create(**validated_data)
+        league = League.objects.create(**validated_data)
         
         # If the league is not public and a password has been provided, set it
         if not validated_data.get('is_public', True) and league_password:
             league.set_password(league_password)
             league.save()   # Remember to save the league after setting the password
-            
+
+        # Create teams for the league
+        with transaction.atomic():
             Team.objects.create(
-                name='Team 1',
+                name= f'Team {request.user.username}',
                 league=league,
                 owner=league.commissioner
             )
 
-
-            for i in range(owners_count):
+            for i in range(2, owners_count + 1):
                 Team.objects.create(
-                    name=f'Team {i + 1}',
+                    name=f'Team {i}',
                     league=league
                 )
-                print(f'Created team {id} for league {league.id}')   
-
-            
-            # # Get all the teams in the league
-            # teams = Team.objects.filter(league=league)
-
-            # # Generate all possible matchups
-            # matchups = list(combinations(teams, 2))
-
-            # # Create Matchup instances for each matchup
-            # for matchup in matchups:
-            #     Matchup.objects.create(team1=matchup[0], team2=matchup[1], league=league)
-            
+                # print(f'Created team {i} for league {league.id}')  
             
            
-        
+        self.create_schedule(league)
         return league
     
 
@@ -111,6 +130,8 @@ class JoinLeagueSerializer(serializers.Serializer):
             team.owner = user
             team.name = f'Team {user.username}'
             team.save()
+
+            LeagueSerializer.create_schedule(league)
 
             return team
 

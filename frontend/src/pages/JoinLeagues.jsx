@@ -8,6 +8,8 @@ const JoinLeague = () => {
   const [error, setError] = useState('');
   const api = useAxios();
   const [leaguePassword, setLeaguePassword] = useState({}); // For storing passwords for private leagues
+  const [joinedLeagues, setJoinedLeagues] = useState(new Set());
+
 
   useEffect(() => {
     const fetchLeagues = async () => {
@@ -24,23 +26,24 @@ const JoinLeague = () => {
   }, []);
 
   const handleJoinLeague = async (league) => {
-    const payload = league.isPublic ? {} : { password: leaguePassword[league.id] };
-    console.log('Joining league with ID:', league.id);
-    console.log('Payload:', payload);
-
-
     try {
-      const response = await api.post(`/leagues/join/${league.id}/`, payload);
-      console.log('Response:', response);
-      alert('Successfully joined the league');
-      // Update UI or state as needed to reflect the successful join
-    } catch (error) {
-      console.error('Failed to join league:', error);
-      if (error.response) {
-        console.error('Server responded with status:', error.response.status);
-        console.error('Server response data:', error.response.data);
+      let data = {};
+      if (!league.is_public) {
+        data = { password: leaguePassword[league.id] };
       }
-      alert('Failed to join league. Check the password for private leagues.');
+  
+      const response = await api.post(`/leagues/join/${league.id}/`, data);
+      if (response.status === 200 || response.status === 201) { // Adjust based on your API
+        // Remove the joined league from the leagues state
+        setLeagues(leagues => leagues.filter(l => l.id !== league.id));
+  
+        // Optionally, if you still need to keep track of joined leagues for other purposes
+        setJoinedLeagues(prev => new Set([...prev, league.id]));
+        alert('Successfully joined the league');
+      }
+    } catch (err) {
+      console.error("Failed to join league:", err);
+      setError("Failed to join league. Check the password for private leagues.");
     }
   };
   
@@ -49,10 +52,13 @@ const JoinLeague = () => {
       <div>
         <h2>Leagues</h2>
         <ul>
-          {leagues.map((league) => (
-            <li key={league.id}>
-              {league.name} - {league.description}
-              {league.isPublic ? (
+        {leagues.map((league) => {
+            console.log(`League: ${league.name}, is_public: ${league.is_public}`);
+            return (
+          <li key={league.id}>
+            {league.name} - {league.description}
+            {!joinedLeagues.has(league.id) && ( // Conditionally render based on whether the league has been joined
+              league.is_public ? (
                 <button onClick={() => handleJoinLeague(league)}>Join League</button>
               ) : (
                 <div>
@@ -63,15 +69,92 @@ const JoinLeague = () => {
                   />
                   <button onClick={() => handleJoinLeague(league)}>Join Private League</button>
                 </div>
-              )}
-            </li>
-          ))}
+              )
+            )}
+          </li>
+          )})}
         </ul>
+        {error && <p>{error}</p>} {/* Display any error that might have occurred */}
       </div>
     </Layout>
   );
 };
 export default JoinLeague;
+
+
+
+
+// const JoinLeague = () => {
+//   const [leagues, setLeagues] = useState([]);
+//   const [error, setError] = useState('');
+//   const api = useAxios();
+//   const [leaguePassword, setLeaguePassword] = useState({}); // For storing passwords for private leagues
+
+//   useEffect(() => {
+//     const fetchLeagues = async () => {
+//       try {
+//         const response = await api.get("/leagues/");
+//         setLeagues(response.data);
+//       } catch (err) {
+//         console.error("Error fetching leagues:", err);
+//         setError("Error fetching leagues. Please try again later.");
+//       }
+//     };
+  
+//     fetchLeagues();
+//   }, []);
+
+//   const handleJoinLeague = async (league) => {
+//     const payload = league.isPublic ? {} : { password: leaguePassword[league.id] };
+//     console.log('Joining league with ID:', league.id);
+//     console.log('Payload:', payload);
+
+//     const handleJoinLeague = async (league) => {
+//       try {
+//       const response = await api.post(`/leagues/join/${league.id}/`, payload);
+//       console.log('Response:', response);
+//       alert('Successfully joined the league');
+//       // Update UI or state as needed to reflect the successful join
+//     } catch (error) {
+//       console.error('Failed to join league:', error);
+//       if (error.response) {
+//         console.error('Server responded with status:', error.response.status);
+//         console.error('Server response data:', error.response.data);
+//       }
+//       alert('Failed to join league. Check the password for private leagues.');
+//     }
+//   };
+  
+//   return (
+//     <Layout>
+//       <div>
+//         <h2>Leagues</h2>
+//         <ul>
+//         {leagues.map((league) => {
+//             console.log(`League: ${league.name}, is_public: ${league.is_public}`);
+//             return (
+//           <li key={league.id}>
+//             {league.name} - {league.description}
+//             {league.is_public ? (
+//               <button onClick={() => handleJoinLeague(league)}>Join League</button>
+//             ) : (
+//               <div>
+//                 <input 
+//                   type="password" 
+//                   placeholder="League Password" 
+//                   onChange={(e) => setLeaguePassword({ ...leaguePassword, [league.id]: e.target.value })} 
+//                 />
+//                 <button onClick={() => handleJoinLeague(league)}>Join Private League</button>
+//               </div>
+//             )}
+//           </li>
+//           )})}
+//         </ul>
+//       </div>
+//     </Layout>
+//   );
+// };
+// export default JoinLeague;
 
 
 //   useEffect(() => {
