@@ -24,7 +24,7 @@ const LeagueHomePage = ({ match }) => {
   }, [leagueId]);
 
   return (
-    <Layout>
+    <Layout showLeagueNavbar={true}>
       <div>
         <h2>League Home Page</h2>
         {league ? (

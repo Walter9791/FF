@@ -64,7 +64,29 @@ span
         text-align: center;
         min-height: 400px;
     }
+  
 }
+
+.league-navbar {
+  // background-color:; // Light grey background
+  display: flex; // Use inline-flex if .league-navbar should only be as wide as its content
+  justify-content: center; // Centers the child elements horizontally
+  align-items: center; // Centers the child elements vertically
+  // padding: 10px;
+  margin: 0 auto; // Important for horizontal centering if not using flexbox in the parent
+
+  a {
+    // margin-right: 10px;
+    text-decoration: none;
+    padding: 10px;
+    color: #333;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 
 form{
     label{

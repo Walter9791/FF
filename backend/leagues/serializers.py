@@ -6,9 +6,7 @@ from itertools import combinations
 from django.contrib.auth.hashers import check_password
 import logging
 import random
-
-
-
+from rosters.models import Position, RosterSpot, TeamPlayer
 
 logger = logging.getLogger(__name__)    
 
@@ -20,7 +18,34 @@ class LeagueSerializer(serializers.ModelSerializer):
         extra_kwargs = {'league_password': {'write_only': True, 'required': False},
                         'commissioner': {'read_only': True},
                         } 
-        
+
+    @staticmethod
+    def initialize_roster(team):
+        # Example roster structure based on your description
+        ROSTER_STRUCTURE = {
+            'QB': 1, 'RB': 1, 'WR': 2, 'X': 1, 'TE': 1, 'T': 2, 'G': 2, 'C': 1,
+            'DT': 2, 'EDGE': 2, 'LB': 3, 'CB': 2, 'S': 2,
+            'K': 1, 'P': 1, 'KR': 1, 'PR': 1, #'BENCH': 20,
+        }
+        TOTAL_SPOTS = 53
+        # Create roster spots for each required position
+        with transaction.atomic():
+        # Create roster spots for each required position
+            for position_code, count in ROSTER_STRUCTURE.items():
+                position, created = Position.objects.get_or_create(name=position_code)
+                for _ in range(count):
+                    RosterSpot.objects.create(team=team, position=position, status='Active')
+
+            # Calculate remaining spots for bench
+            bench_spots = TOTAL_SPOTS - sum(ROSTER_STRUCTURE.values())
+
+            # Initialize bench spots without specifying a position
+            for _ in range(bench_spots):
+                RosterSpot.objects.create(team=team, position=None, status='Bench')
+
+        logger.info(f"Roster initialized for team: {team.name}") 
+    
+    
     @staticmethod
     def create_schedule(league):
         print("schedule for league:", league.name)
@@ -38,7 +63,7 @@ class LeagueSerializer(serializers.ModelSerializer):
                         home_team = teams[i * 2] 
                         away_team = teams[i * 2 + 1] ##if i * 2 + 1 < len(teams) else None --- not sure if needed 
                         if away_team:
-                            print(f"Week {week}: {home_team.name} vs {away_team.name}") 
+                            #print(f"Week {week}: {home_team.name} vs {away_team.name}")  --Console log
                             Matchup.objects.create(
                                 week=week,
                                 league=league,
@@ -73,20 +98,30 @@ class LeagueSerializer(serializers.ModelSerializer):
 
         # Create teams for the league
         with transaction.atomic():
-            Team.objects.create(
-                name= f'Team {request.user.username}',
+        # Create the commissioner's team and initialize its roster immediately
+            commissioner_team = Team.objects.create(
+                name=f"Team {request.user.username}",  # Assuming this is the naming convention for the commissioner's team
                 league=league,
-                owner=league.commissioner
+                owner=request.user  # Assigning the commissioner as the owner
             )
+            # Initialize roster for the commissioner's team
+            self.initialize_roster(commissioner_team)
+
+
+            # Team.objects.create(
+            #     name= f'Team {request.user.username}',
+            #     league=league,
+            #     owner=league.commissioner
+            # )
 
             for i in range(2, owners_count + 1):
-                Team.objects.create(
+                team = Team.objects.create(
                     name=f'Team {i}',
                     league=league
                 )
                 # print(f'Created team {i} for league {league.id}')  
-            
-           
+                self.initialize_roster(team)
+        
         self.create_schedule(league)
         return league
     

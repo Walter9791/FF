@@ -33,15 +33,6 @@ class LeagueListCreate(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         try: 
             league = serializer.save(commissioner=self.request.user)
-            
-            # Create shell teams here if you haven't done so in the serializer
-
-            # # Assign the first team to the commissioner
-            # first_team = Team.objects.filter(league=league, owner=None).first()
-            # if first_team:
-            #     first_team.owner = self.request.user
-            #     first_team.name = f'Team {self.request.user.username}'
-            #     first_team.save()
         except Exception as e:
             logger.error(f"League creation errors: {e}")
             return Response({'error': 'League creation failed'}, status=400)
