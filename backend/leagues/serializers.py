@@ -170,4 +170,22 @@ class JoinLeagueSerializer(serializers.Serializer):
 
             return team
 
- 
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = ['id', 'name']  # Adjust based on the fields you want to include
+
+class MatchupSerializer(serializers.ModelSerializer):
+    # Use TeamSerializer for detailed team info (optional)
+    home_team = TeamSerializer(read_only=True)
+    away_team = TeamSerializer(read_only=True)
+    
+    # Correcting field types for scores
+    home_score = serializers.DecimalField(max_digits=5, decimal_places=2, required=False, allow_null=True)
+    away_score = serializers.DecimalField(max_digits=5, decimal_places=2, required=False, allow_null=True)
+
+    class Meta:
+        model = Matchup
+        fields = ['week', 'home_team', 'away_team', 'home_score', 'away_score']

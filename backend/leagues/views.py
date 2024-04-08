@@ -1,12 +1,13 @@
 from django.shortcuts import render
+from rest_framework.views import APIView
 from rest_framework import generics
-from .serializers import LeagueSerializer, JoinLeagueSerializer 
+from .serializers import LeagueSerializer, JoinLeagueSerializer, MatchupSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Q , Count, F
-from .models import League, Team
+from .models import League, Team, Matchup
 import logging
 
 
@@ -17,6 +18,18 @@ class LeagueDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = LeagueSerializer
     queryset = League.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        serialized_data = serializer.data
+
+        # Now, add the teamId for the current user and league
+        user_team = Team.objects.filter(league=instance, owner=request.user).first()
+        team_id = user_team.id if user_team else None
+        serialized_data['user_team_id'] = team_id
+
+        return Response(serialized_data)
 
 
 class LeagueListCreate(generics.ListCreateAPIView):
@@ -65,6 +78,16 @@ class JoinLeagueView(generics.CreateAPIView):
 
 
 
+class LeagueScheduleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, league_id):
+        matchups = Matchup.objects.filter(league_id=league_id)
+        serializer = MatchupSerializer(matchups, many=True)
+        return Response(serializer.data)
+
+
+
 @api_view(['GET'])
 def get_joined_leagues(request):
     # Fetch leagues where the user is a member or the commissioner
@@ -72,6 +95,9 @@ def get_joined_leagues(request):
     serializer = LeagueSerializer(leagues, many=True)
     # logger.info('Sending the following leagues to the frontend: %s', serializer.data)
     return Response(serializer.data)
+
+
+
 
 
 

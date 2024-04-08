@@ -19,7 +19,8 @@ import { Home,
      LeagueRosters,
      FreeAgency, 
      Matchup, 
-     Settings, 
+     Settings,
+     LeagueSchedule 
     } from './pages'
 
 const App = () => {
@@ -53,12 +54,13 @@ const App = () => {
                             <ProtectedRoute>
                                 <LeagueHomePage />
                             </ProtectedRoute>} />  
-                            <Route path="roster" element={<MyRoster />} />
-                            <Route path="matchup" element={<Matchup />} />
-                            <Route path="schedule" element={<MySchedule />} /> 
-                            <Route path="free-agency" element={<FreeAgency />} />
-                            <Route path="rosters" element={<LeagueRosters />} />
-                            <Route path="settings" element={<Settings />} />
+                            <Route path="/my-leagues/:leagueId/teams/:teamId/roster" element={<MyRoster />} />
+                            <Route path="/my-leagues/:leagueId/teams/:teamId/matchup" element={<Matchup />} />
+                            <Route path="/my-leagues/:leagueId/schedule" element={<LeagueSchedule />} />
+                            <Route path="/my-leagues/:leagueId/teams/:teamId/schedule" element={<MySchedule />} /> 
+                            <Route path="/my-leagues/:leagueId/teams/:teamId/free-agency" element={<FreeAgency />} />
+                            <Route path="/my-leagues/:leagueId/teams/:teamId/rosters" element={<LeagueRosters />} />
+                            <Route path="/my-leagues/:leagueId/teams/:teamId/settings" element={<Settings />} />
                     </Routes>
                     
                 </AuthProvider>    
