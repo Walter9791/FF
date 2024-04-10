@@ -1,6 +1,7 @@
 import React, {useContext} from 'react'
 import { Link } from 'react-router-dom'
 import AuthContext from '../context/authContext'
+import Layout from '../components/layout'
 
 const Login = () => {
   const {loginUser} = useContext(AuthContext)
@@ -15,6 +16,7 @@ const Login = () => {
     loginUser(email, password)
   }
   return (
+    <Layout>
     <div className='login'>
       <h1>Login</h1>
       <p>Sign Into Your Account</p>
@@ -42,6 +44,7 @@ const Login = () => {
 
       </form>
     </div>
+    </Layout>
   )
 }
 

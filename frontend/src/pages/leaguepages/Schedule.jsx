@@ -13,12 +13,15 @@ const SchedulePage = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
   const api = useAxios();
+  const [league, setLeague] = useState(null);
 
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
         const response = await api.get(`/leagues/${leagueId}/schedule`);
         setSchedule(response.data);
+        setLeague(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Failed to fetch schedule", error);
         setError("Failed to load schedule data.");
@@ -43,7 +46,7 @@ const SchedulePage = () => {
 
 
   return (
-    <Layout showLeagueNavbar={true} customClass='schedule-container'>
+    <Layout showLeagueNavbar={true} teamId={league.user_team_id} customClass='schedule-container'>
             <h2>Schedule</h2>
             <table>
                 {/* Table Head */}

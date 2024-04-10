@@ -7,25 +7,37 @@ from django.contrib.auth.hashers import check_password
 import logging
 import random
 from rosters.models import Position, RosterSpot, TeamPlayer
+from api.models import Profile
 
 logger = logging.getLogger(__name__)    
 
 class LeagueSerializer(serializers.ModelSerializer):
+    team_names = serializers.SerializerMethodField()
+    commissioner_name = serializers.SerializerMethodField()
 
     class Meta:
         model = League
-        fields = ['id', 'name', 'commissioner', 'owners_count', 'member','is_public', 'league_password', 'description', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'commissioner', "commissioner_name", 'owners_count', 'member','is_public', 'league_password', 'description', 'created_at', 'updated_at', 'team_names']
         extra_kwargs = {'league_password': {'write_only': True, 'required': False},
                         'commissioner': {'read_only': True},
                         } 
+        
+    def get_team_names(self, obj):
+        teams = Team.objects.filter(league=obj)
+        return [team.name for team in obj.teams.all()]
+    
+    def get_commissioner_name(self, obj):  # New method
+        commissioner_profile = obj.commissioner.profile
+        return f"{commissioner_profile.first_name} {commissioner_profile.last_name}"
+    
 
     @staticmethod
     def initialize_roster(team):
         # Example roster structure based on your description
         ROSTER_STRUCTURE = {
             'QB': 1, 'RB': 1, 'WR': 2, 'X': 1, 'TE': 1, 'T': 2, 'G': 2, 'C': 1,
-            'DT': 2, 'EDGE': 2, 'LB': 3, 'CB': 2, 'S': 2,
-            'K': 1, 'P': 1, 'KR': 1, 'PR': 1, #'BENCH': 20,
+            'DT': 2, 'DE' : 2, 'LB': 3, 'CB': 2, 'S': 2,
+            'K': 1, 'P': 1, 'KR': 1, 'PR': 1
         }
         TOTAL_SPOTS = 53
         # Create roster spots for each required position
@@ -100,7 +112,7 @@ class LeagueSerializer(serializers.ModelSerializer):
         with transaction.atomic():
         # Create the commissioner's team and initialize its roster immediately
             commissioner_team = Team.objects.create(
-                name=f"Team {request.user.username}",  # Assuming this is the naming convention for the commissioner's team
+                name=f"{request.user.username}'s Team",  # Assuming this is the naming convention for the commissioner's team
                 league=league,
                 owner=request.user  # Assigning the commissioner as the owner
             )
@@ -116,7 +128,7 @@ class LeagueSerializer(serializers.ModelSerializer):
 
             for i in range(2, owners_count + 1):
                 team = Team.objects.create(
-                    name=f'Team {i}',
+                    name=f'empty team {i}',
                     league=league
                 )
                 # print(f'Created team {i} for league {league.id}')  
@@ -163,7 +175,7 @@ class JoinLeagueSerializer(serializers.Serializer):
 
             # Assign the user to the team
             team.owner = user
-            team.name = f'Team {user.username}'
+            team.name = f"{user.username}'s Team"
             team.save()
 
             LeagueSerializer.create_schedule(league)

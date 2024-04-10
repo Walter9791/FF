@@ -1,6 +1,7 @@
 import React, {useState, useContext} from 'react'
 import { Link } from 'react-router-dom'
 import AuthContext from "../context/authContext"
+import Layout from '../components/layout'
 
 
 const Register = () => {
@@ -24,6 +25,7 @@ const Register = () => {
   }
 
   return (
+    <Layout>
     <div className='register'>
       <h1>Register</h1>
       <p>Create a new account</p>
@@ -80,6 +82,7 @@ const Register = () => {
 
       </form>
     </div>
+    </Layout>
   )
 }
 

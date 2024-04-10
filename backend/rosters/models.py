@@ -11,7 +11,7 @@ class Position(models.Model):
         ('G', 'Guard'),
         ('C', 'Center'),
         ('DT', 'Defensive Tackle'),
-        ('EDGE', 'Edge'),
+        ('DE', 'Defensive End'),
         ('LB', 'Linebacker'),
         ('CB', 'Cornerback'),
         ('S', 'Safety'),
@@ -21,9 +21,12 @@ class Position(models.Model):
         ('P', 'Punter'),
     ]
     name = models.CharField(max_length=5, choices=POSITION_CHOICES, unique=True)
-    is_skill_position = models.BooleanField(default=False) #will need to set in CSV file for each player
-    is_punt_returner = models.BooleanField(default=False)
-    is_kick_returner = models.BooleanField(default=False)
+    is_skill_position = models.BooleanField(default=False, null=True) #will need to set in CSV file for each player
+    is_punt_returner = models.BooleanField(default=False, null=True)
+    is_kick_returner = models.BooleanField(default=False, null=True)
+    offensive = models.BooleanField(default=False, null=True)
+    defensive = models.BooleanField(default=False, null=True)  
+    special_teams = models.BooleanField(default=False, null=True)
 
     def __str__(self):
         return self.get_name_display()

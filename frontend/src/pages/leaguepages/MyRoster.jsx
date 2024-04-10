@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import useAxios from '../../utils/useAxios';
 import Layout from '../../components/layout';
+import { useLeague } from '../../context/LeagueContext';
 
 const RosterPage = () => {
-  const { leagueId, teamId } = useParams(); // Ensure you're capturing teamId from the URL
   const [roster, setRoster] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const api = useAxios(); 
+  const api = useAxios();
+  const { leagueId, teamId, updateLeagueAndTeam } = useLeague();
 
   useEffect(() => {
     const fetchRoster = async () => {
