@@ -1,5 +1,5 @@
 from django.db import models
-from leagues.models import Team
+from leagues.models import Team, League
 
 class Position(models.Model):
     POSITION_CHOICES = [
@@ -56,6 +56,7 @@ class TeamPlayer(models.Model):
 class RosterSpot(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='roster_spots')
     player = models.OneToOneField(Player, on_delete=models.SET_NULL, null=True, blank=True, related_name='roster_spot')
+    league= models.ForeignKey(League, on_delete=models.CASCADE, related_name='roster_spots', null=True, blank=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=True, blank=True)
     STATUS_CHOICES = [
         ('Active', 'Active'),

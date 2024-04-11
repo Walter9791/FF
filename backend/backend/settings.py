@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'leagues.apps.LeagueConfig',
     'rosters.apps.RostersConfig',
+    'scoring.apps.ScoringConfig',
 ]
 
 MIDDLEWARE = [
