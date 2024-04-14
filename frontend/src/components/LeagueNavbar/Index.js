@@ -10,13 +10,13 @@ const LeagueNavbar = ({ teamId }) => {
     <>
         <nav className='league-navbar'>
             {/* <Link to={`/my-leagues/${leagueId}/roster`}>My Roster</Link> |{" "} */}
-            <Link to={`/my-leagues/${leagueId}`}>League Home</Link> |{" "}
-            <Link to={`/my-leagues/${leagueId}/teams/${teamId}/roster`}>My Roster</Link> |{" "}
-            <Link to={`/my-leagues/${leagueId}/teams/${teamId}/matchup`}>Matchup</Link> |{" "}
-            <Link to={`/my-leagues/${leagueId}/teams/${teamId}/schedule`}>My Schedule</Link> |{" "}
-            <Link to={`/my-leagues/${leagueId}/schedule`}>League Schedule</Link> |{" "}
-            <Link to={`/my-leagues/${leagueId}/free-agency`}>Free Agency</Link> |{" "}
-            <Link to={`/my-leagues/${leagueId}/rosters`}>League Rosters</Link> |{" "}
+            <Link to={`/my-leagues/${leagueId}`}>League Home</Link> {" "}
+            <Link to={`/my-leagues/${leagueId}/teams/${teamId}/roster`}>My Roster</Link> {" "}
+            <Link to={`/my-leagues/${leagueId}/teams/${teamId}/matchup`}>Matchup</Link> {" "}
+            <Link to={`/my-leagues/${leagueId}/teams/${teamId}/schedule`}>My Schedule</Link> {" "}
+            <Link to={`/my-leagues/${leagueId}/schedule`}>League Schedule</Link> {" "}
+            <Link to={`/my-leagues/${leagueId}/free-agency`}>Free Agency</Link> {" "}
+            <Link to={`/my-leagues/${leagueId}/rosters`}>League Rosters</Link> {" "}
             <Link to={`/my-leagues/${leagueId}/teams/${teamId}/settings`}>Settings</Link>
         </nav>
     </>

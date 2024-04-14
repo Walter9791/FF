@@ -15,8 +15,6 @@ class Position(models.Model):
         ('LB', 'Linebacker'),
         ('CB', 'Cornerback'),
         ('S', 'Safety'),
-        ('KR', 'Kick Returner'),
-        ('PR', 'Punt Returner'),
         ('K', 'Kicker'),
         ('P', 'Punter'),
     ]
@@ -35,8 +33,8 @@ class Player(models.Model):
     name = models.CharField(max_length=100)
     jersey_number = models.IntegerField(null=True, blank=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)  # Could also be a ForeignKey to a Position model
-    height = models.CharField(max_length=10)  # Example: '6\'2"'
-    weight = models.IntegerField()  # In pounds
+    height = models.CharField(max_length=10) 
+    weight = models.IntegerField()  
     experience= models.IntegerField(null=True, blank=True)  # Nullable if not applicable
     college = models.CharField(max_length=100, null=True, blank=True)  # Nullable if not applicable
     nfl_team = models.CharField(max_length=100, null=True, blank=True)  
@@ -45,18 +43,17 @@ class Player(models.Model):
         return f"{self.name} ({self.position})"
 
 
-class TeamPlayer(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    date_added = models.DateField(auto_now_add=True)
+# class TeamPlayer(models.Model):
+#     team = models.ForeignKey(Team, on_delete=models.CASCADE)
+#     player = models.ForeignKey(Player, on_delete=models.CASCADE)
+#     date_added = models.DateField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ('team', 'player')
+#     class Meta:
+#         unique_together = ('team', 'player')
 
 class RosterSpot(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='roster_spots')
-    player = models.OneToOneField(Player, on_delete=models.SET_NULL, null=True, blank=True, related_name='roster_spot')
-    league= models.ForeignKey(League, on_delete=models.CASCADE, related_name='roster_spots', null=True, blank=True)
+    player = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, blank=True, related_name='roster_spots')
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=True, blank=True)
     STATUS_CHOICES = [
         ('Active', 'Active'),
@@ -66,7 +63,7 @@ class RosterSpot(models.Model):
     status = models.CharField(max_length=50, choices=[('Active', 'Active'), ('Bench', 'Bench')])
 
     class Meta:
-        unique_together = ('team', 'position', 'player')
+        unique_together = ('team', 'player')
 
     def __str__(self):
         position_str = self.position.name if self.position else "No Position"

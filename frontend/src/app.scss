@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 //CSS variable 
 
-$main-bg: #55c374;
+$main-bg: #006747;
 $soft-bg: #f7f7f7c1;
 $dark-bg: #333;
 
@@ -14,7 +14,7 @@ $green: #166916;
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    // box-sizing: border-box;
 }
 
 body {
@@ -22,6 +22,9 @@ body {
     background-color: $main-bg;
     color: $main-color;
     font-size: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
         p{
             margin-bottom: 2rem;
             text-align: center;
@@ -44,42 +47,52 @@ span
     font-size: 1rem;
 }
 
+// .layout-wrapper {
+//   display: flex;
+//   flex-direction: column;
+//   min-height: 100vh;
+// }
+
+.app {
+  display: flex;
+  flex-direction: column;
+  // flex-grow: 1;
+}
+
 .app {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     width: 100%;
     background-color: $main-bg;
     color: $main-color;
     font-size: 1.5rem;
-
-    .layout-container {
-        width: 100%;
-        max-width: 800px;
-        padding: 2rem;
-        background-color: $soft-bg;
-        border-radius: 1rem;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        min-height: 400px;
-    }
-  
 }
 
+.form-container {
+      width: 100%;
+      max-width: 800px;
+      padding: 2rem;
+      background-color: $soft-bg;
+      border-radius: 1rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+
+  }
+  
+
 .league-navbar {
-  // background-color:; // Light grey background
-  display: flex; // Use inline-flex if .league-navbar should only be as wide as its content
-  justify-content: center; // Centers the child elements horizontally
-  align-items: center; // Centers the child elements vertically
-  // padding: 10px;
-  margin: 0 auto; // Important for horizontal centering if not using flexbox in the parent
+  display: flex;
+  justify-content: center;
 
   a {
-    // margin-right: 10px;
-    text-decoration: none;
-    padding: 10px;
-    color: #333;
+    // text-decoration: none;
+    padding: 8px;
+    color: #ffffff;
 
     &:hover {
       text-decoration: underline;
@@ -205,15 +218,15 @@ form{
 
   
 footer {
-    position: relative;
     width: 100%;
-    background-color: #b8b9c3;
     color: rgb(0, 0, 0);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
     box-sizing: border-box;
+    margin-top: auto;
+    
   
     .leftFooter,
     .midFooter,
@@ -229,7 +242,7 @@ footer {
       }
   
       p {
-        margin: 0.5rem 0;
+        // margin: 0.5rem 0;
         font-size: 1rem;
       }
     }
@@ -238,19 +251,17 @@ footer {
   
 
 
-schedule-container {
+.schedule-container {
     padding: 20px;
     margin: 40px auto;
-    width: 40%; // Adjust width as needed
-    background-color: #fff; // A light background to distinguish it from the app background
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); // Optional: adds a subtle shadow for depth
+    max-width: 1024px; 
+    // box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); // Optional: adds a subtle shadow for depth
     
 
     .layout-container {
-      width: 10%;
-      max-width: 600px;
-      padding: 2rem;
-      background-color: black;
+      max-width: 1024px;
+      // padding: 2rem;
+      background-color: #ffffffc1;
       border-radius: 1rem;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       text-align: center;
@@ -258,16 +269,18 @@ schedule-container {
     }
   
     table {
-      width: 80%;
+      width: 100%;
       border-collapse: collapse;
-      border: 1px solid #ddd; // Adds a border around the table
-
+      border: 1px solid #ddd;
+      
       
       th, td {
-        text-align: left;
-        padding: 20px;
-        border-bottom: 1px solid #ddd; // Adds a bottom border to each cell
+        text-align: center;
+        padding: 25px;
+        border-bottom: 3px solid #ddd; // Adds a bottom border to each cell
+        ;
       }
+
   
       th {
         background-color: #f4f4f4; // A different background for header cells
@@ -294,62 +307,10 @@ schedule-container {
   }
   
   .pagination__link--active {
-    background-color: #007bff;
+    background-color: #6f7276;
     color: white;
   }
   
   .pagination__link--disabled {
     color: #ccc;
   }
-
-
-
-
-
-
-// schedule-container {
-//   padding: 20px;
-//   margin: 20px auto;
-//   width: 90%;
-//   background-color: #fff;
-//   box-shadow: 0 0 10px rgba(0,0,0,0.1);
-
-//   table {
-//       width: 100%;
-//       border-collapse: collapse;
-//       th, td {
-//           text-align: left;
-//           padding: 8px;
-//           border-bottom: 1px solid #ddd;
-//       }
-//       th {
-//           background-color: #f4f4f4;
-//       }
-//       tr:hover {
-//           background-color: #f5f5f5;
-//       }
-//   }
-
-//   .pagination {
-//       display: flex;
-//       justify-content: center;
-//       padding: 20px;
-//       .pagination__link {
-//           margin: 0 5px;
-//           padding: 5px 10px;
-//           border: 1px solid #ddd;
-//           cursor: pointer;
-//           &:hover, &--active {
-//               background-color: #007bff;
-//               color: white;
-//           }
-//           &--disabled {
-//               color: #ccc;
-//           }
-//       }
-//   }
-// }
-
-// .schedule-container .layout-container {
-//     max-width: 100%; // Example adjustment
-// }

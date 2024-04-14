@@ -82,3 +82,19 @@ class Matchup(models.Model):
 
     def __str__(self):
         return f"Week {self.week}: {self.home_team} vs. {self.away_team}"
+
+
+    ############################# Weeks Model ###############################################
+class Week(models.Model):
+    week_number = models.IntegerField(help_text="Week number in the season")
+    start_date = models.DateField(help_text="Start date of the fantasy week")
+    end_date = models.DateField(help_text="End date of the fantasy week")
+    lock_time = models.DateTimeField(help_text="Deadline after which no roster changes can be made")
+    is_active = models.BooleanField(default=False, help_text="Whether this week is currently active")
+
+    def __str__(self):
+        return f"Week {self.week_number}: {self.start_date} to {self.end_date}"
+
+    class Meta:
+        ordering = ['week_number']
+        verbose_name_plural = "Weeks"

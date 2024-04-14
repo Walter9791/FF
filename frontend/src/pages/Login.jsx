@@ -16,7 +16,7 @@ const Login = () => {
     loginUser(email, password)
   }
   return (
-    <Layout>
+    <Layout customClass=''>
     <div className='login'>
       <h1>Login</h1>
       <p>Sign Into Your Account</p>

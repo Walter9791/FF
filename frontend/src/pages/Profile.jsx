@@ -39,7 +39,7 @@ const Profile = () => {
 
   return (
     <Layout>
-    <div className='profile'>
+    <div className='form-container'>
       <h1>PROFILE</h1>
       <p>Welcome, {username}</p>
       <span>Your Information:</span>

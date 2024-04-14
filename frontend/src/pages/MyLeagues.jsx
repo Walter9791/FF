@@ -25,7 +25,7 @@ const MyLeagues = () => {
 
   return (
     <Layout>
-      <div>
+      <div className='form-container'>
         <h2>My Leagues</h2>
         <ul>
           {joinedLeagues.map((league) => (

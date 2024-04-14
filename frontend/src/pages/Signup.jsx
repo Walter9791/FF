@@ -25,7 +25,7 @@ const Register = () => {
   }
 
   return (
-    <Layout>
+    <Layout customClass='form-container'>
     <div className='register'>
       <h1>Register</h1>
       <p>Create a new account</p>

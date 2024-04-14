@@ -1,19 +1,20 @@
 import React from "react";
+// import footerStyles from "./footer.module.css";  
 
 const Footer = () => {
   return (
     <footer id="footer">
-      <div className="leftFooter">
+      <div>
         <h4>Left Footer</h4>
         <p>Testing for footer</p>
       </div>
 
-      <div className="midFooter">
+      <div>
         <h1>Director of Player Personnel</h1>
         <p>Copyright? &copy; Walter Burke</p>
       </div>
 
-      <div className="rightFooter">
+      <div>
         <h4>Right Footer</h4>
         <p>Testing for footer</p>
       </div>

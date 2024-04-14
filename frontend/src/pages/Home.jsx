@@ -16,7 +16,7 @@ const Home = () => {
 
   return (
     <Layout>
-    <div className='Home'>
+    <div className='form-container'>
       <h1>Homepage</h1>
       <p>This is the Homepage</p>
 

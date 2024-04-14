@@ -46,38 +46,42 @@ const SchedulePage = () => {
 
 
   return (
-    <Layout showLeagueNavbar={true} teamId={league.user_team_id} customClass='schedule-container'>
-            <h2>Schedule</h2>
-            <table>
-                {/* Table Head */}
-                <tbody>
-                {currentItems.map((matchup) => (
-                    // Table Rows
-                    <tr key={matchup.id}>
-                        <td>Week {matchup.week}</td>
-                        {matchup.home_team ? matchup.home_team.name : 'N/A'} vs {matchup.away_team ? matchup.away_team.name : 'N/A'}
-                        <td>Score: {matchup.home_score || 'N/A'} - {matchup.away_score || 'N/A'}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-            <ReactPaginate
-              previousLabel={"← Previous"}
-              nextLabel={"Next →"}
-              pageCount={pageCount}
-              onPageChange={handlePageClick}
-              containerClassName={"pagination"}
-              previousLinkClassName={"pagination__link"}
-              nextLinkClassName={"pagination__link"}
-              disabledClassName={"pagination__link--disabled"}
-              activeClassName={"pagination__link--active"}
-            />           
-    </Layout> 
+    <Layout showLeagueNavbar={true} teamId={teamId} customClass='schedule-container'>
+      <h2>Schedule</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Week</th>
+            <th>Matchup</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentItems.map((matchup) => (
+            <tr key={matchup.id}>
+              <td>{`Week ${matchup.week}`}</td>
+              <td>{matchup.home_team ? matchup.home_team.name : 'N/A'} vs {matchup.away_team ? matchup.away_team.name : 'N/A'}</td>
+              <td>{`Score: ${matchup.home_score || 'N/A'} - ${matchup.away_score || 'N/A'}`}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <ReactPaginate
+        previousLabel={"← Previous"}
+        nextLabel={"Next →"}
+        pageCount={pageCount}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination"}
+        previousLinkClassName={"pagination__link"}
+        nextLinkClassName={"pagination__link"}
+        disabledClassName={"pagination__link--disabled"}
+        activeClassName={"pagination__link--active"}
+      />
+    </Layout>
   );
 };
 
 export default SchedulePage;
-
 //   return (
 //     <div>
 //         <Layout showLeagueNavbar={true}>

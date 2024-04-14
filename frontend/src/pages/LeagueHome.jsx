@@ -42,7 +42,7 @@ const LeagueHomePage = () => {
 
   return (
     <Layout showLeagueNavbar={true} teamId={league.user_team_id}>
-      <div>
+      <div className='form-container'>
         <h2>League Home Page</h2>
         {league ? (
           <div>
