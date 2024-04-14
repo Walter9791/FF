@@ -69,6 +69,22 @@ span
     color: $main-color;
     font-size: 1.5rem;
 }
+// .app {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: normal; // Change from center to normal to avoid horizontal centering
+//   justify-content: normal; // Change from center to normal to avoid vertical centering
+//   min-height: 100vh;
+//   width: 100%;
+//   background-color: $main-bg;
+//   color: $main-color;
+//   font-size: 1.5rem;
+// }
+// .layout-content {
+//   width: 100%; // Ensure it takes the full width of the parent
+//   display: block; // Optional: Change display to block if flex is not needed
+//   padding: 20px; // Optional: Add padding to separate content from edges
+// }
 
 .form-container {
       width: 100%;
@@ -252,21 +268,30 @@ footer {
 
 
 .schedule-container {
-    padding: 20px;
-    margin: 40px auto;
-    max-width: 1024px; 
+    padding: 10px;
+    margin: auto;
+    min-width: 1024px;
+    max-width: 1536;
     // box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); // Optional: adds a subtle shadow for depth
     
 
     .layout-container {
-      max-width: 1024px;
+      min-width: 1024px;
       // padding: 2rem;
       background-color: #ffffffc1;
       border-radius: 1rem;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       text-align: center;
       min-height: 400px;
-    }
+
+        .save-button {
+          margin: 20px; // Space above the button
+          display: block; // Ensure the button is a block element to take width properties
+          width: max-content; // The button width is as big as its content
+          margin-left: auto; // Center align the button by automatically adjusting left margin
+          margin-right: auto; // Center align the button by automatically adjusting right margin
+        }
+}
   
     table {
       width: 100%;
@@ -314,3 +339,29 @@ footer {
   .pagination__link--disabled {
     color: #ccc;
   }
+  
+  .save-button {
+    padding: 12px 24px; // Increase the padding for a larger button size
+    font-size: 1.2rem; // Larger text inside the button
+    font-weight: bold; // Make the text bold
+    color: #fff; // White text color
+    background-color: #007BFF; // A bright blue background color
+    border: none; // No border for a modern look
+    border-radius: 8px; // Rounded corners
+    cursor: pointer; // Cursor indicates it's clickable
+    transition: background-color 0.3s ease; // Smooth transition for hover effect
+  
+    &:hover {
+      background-color: #0056b3; // Darker blue on hover
+    }
+  
+    &:focus {
+      outline: none; // Remove focus outline for aesthetics
+      box-shadow: 0 0 0 2px rgba(0,123,255,0.5); // Add a subtle glow effect when focused
+    }
+  
+    &:active {
+      transform: scale(0.98); // Slightly scale down when clicked
+    }
+  }
+  

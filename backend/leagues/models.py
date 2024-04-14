@@ -87,9 +87,9 @@ class Matchup(models.Model):
     ############################# Weeks Model ###############################################
 class Week(models.Model):
     week_number = models.IntegerField(help_text="Week number in the season")
-    start_date = models.DateField(help_text="Start date of the fantasy week")
-    end_date = models.DateField(help_text="End date of the fantasy week")
-    lock_time = models.DateTimeField(help_text="Deadline after which no roster changes can be made")
+    start_date = models.DateField(help_text="Start date of the fantasy week", null=True, blank=True)
+    end_date = models.DateField(help_text="End date of the fantasy week", null=True, blank=True)
+    lock_time = models.DateTimeField(help_text="Deadline after which no roster changes can be made", null=True, blank=True)
     is_active = models.BooleanField(default=False, help_text="Whether this week is currently active")
 
     def __str__(self):
@@ -98,3 +98,23 @@ class Week(models.Model):
     class Meta:
         ordering = ['week_number']
         verbose_name_plural = "Weeks"
+
+
+
+class NFLTeam(models.Model):
+    name = models.CharField(max_length=100, unique=True)  # 'Kansas City Chiefs'
+    abbreviation = models.CharField(max_length=3, unique=True)  # 'KC'
+
+    def __str__(self):
+        return self.name
+    
+
+class NFLGame(models.Model):
+    week = models.ForeignKey(Week, on_delete=models.CASCADE, related_name='games')
+    home_team = models.ForeignKey(NFLTeam, on_delete=models.CASCADE, related_name='home_games')
+    away_team = models.ForeignKey(NFLTeam, on_delete=models.CASCADE, related_name='away_games')
+    game_date = models.CharField(max_length=50, null=True, blank=True)
+    game_time = models.CharField(max_length=50, null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.away_team} at {self.home_team} on {self.game_date} at {self.game_time}"

@@ -69,3 +69,12 @@ class RosterSpot(models.Model):
         position_str = self.position.name if self.position else "No Position"
         return f"{self.team.name} - {position_str} - {self.player.name if self.player else 'Vacant'} ({self.status})"
 
+
+class RosterEntry(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='roster_entries')
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    week = models.ForeignKey('leagues.Week', on_delete=models.CASCADE)
+    status = models.CharField(max_length=50, choices=[('Active', 'Active'), ('Bench', 'Bench')])    
+
+    def __str__(self):
+        return f"{self.team.name} - {self.player.name} - {self.position.name}"
