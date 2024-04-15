@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import RosterSpot, RosterEntry, Position, Player
+from .models import RosterSpot, Position, Player
 from leagues.models import Matchup, Week, NFLGame, NFLTeam
 from django.db.models import Q
 
@@ -60,5 +60,5 @@ class RosterEntrySerializer(serializers.ModelSerializer):
     status = serializers.CharField()    
 
     class Meta:
-        model = RosterEntry
+        model = RosterSpot
         fields = ['id', 'player_name', 'position_name', 'week', 'status']

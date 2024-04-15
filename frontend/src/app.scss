@@ -69,22 +69,6 @@ span
     color: $main-color;
     font-size: 1.5rem;
 }
-// .app {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: normal; // Change from center to normal to avoid horizontal centering
-//   justify-content: normal; // Change from center to normal to avoid vertical centering
-//   min-height: 100vh;
-//   width: 100%;
-//   background-color: $main-bg;
-//   color: $main-color;
-//   font-size: 1.5rem;
-// }
-// .layout-content {
-//   width: 100%; // Ensure it takes the full width of the parent
-//   display: block; // Optional: Change display to block if flex is not needed
-//   padding: 20px; // Optional: Add padding to separate content from edges
-// }
 
 .form-container {
       width: 100%;
@@ -161,9 +145,11 @@ form{
     align-items: center;
     display: flex;
     justify-content: space-between;
-    height: 2rem;
+    height: 3rem;
     background-color: #333;
-    list-style: upper-alpha;   
+    list-style: upper-alpha;
+    align-content: space-around; 
+    padding: 0 1rem;  
   }
   .nav-items {
     display: flex;
@@ -228,9 +214,6 @@ form{
     display: block;
   }
   
-  .dropdown:hover .dropbtn {
-    // background-color: #555;
-  }
 
   
 footer {

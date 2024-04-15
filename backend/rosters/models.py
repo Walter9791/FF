@@ -1,5 +1,5 @@
 from django.db import models
-from leagues.models import Team, League
+from leagues.models import Team, League, Week
 
 class Position(models.Model):
     POSITION_CHOICES = [
@@ -43,14 +43,6 @@ class Player(models.Model):
         return f"{self.name} ({self.position})"
 
 
-# class TeamPlayer(models.Model):
-#     team = models.ForeignKey(Team, on_delete=models.CASCADE)
-#     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-#     date_added = models.DateField(auto_now_add=True)
-
-#     class Meta:
-#         unique_together = ('team', 'player')
-
 class RosterSpot(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='roster_spots')
     player = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, blank=True, related_name='roster_spots')
@@ -61,20 +53,12 @@ class RosterSpot(models.Model):
         ('Injured', 'Injured')
     ]
     status = models.CharField(max_length=50, choices=[('Active', 'Active'), ('Bench', 'Bench')])
+    week = models.ForeignKey(Week, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        unique_together = ('team', 'player')
+        unique_together = ('team', 'player', 'week')
 
     def __str__(self):
-        position_str = self.position.name if self.position else "No Position"
-        return f"{self.team.name} - {position_str} - {self.player.name if self.player else 'Vacant'} ({self.status})"
+        return f"{self.team.name} - {self.position.name if self.position else 'No Position'} - {self.player.name if self.player else 'Vacant'} ({self.status}) - Week {self.week.week_number}"
 
 
-class RosterEntry(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='roster_entries')
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    week = models.ForeignKey('leagues.Week', on_delete=models.CASCADE)
-    status = models.CharField(max_length=50, choices=[('Active', 'Active'), ('Bench', 'Bench')])    
-
-    def __str__(self):
-        return f"{self.team.name} - {self.player.name} - {self.position.name}"
