@@ -41,10 +41,10 @@ const CreateLeague = () => {
       setOwnersCount('');
       setDescription('');
       setLeaguePassword('');
-      setIsPublic(true); // Reset to default public
+      setIsPublic(true); 
       setSuccessMessage("League created successfully!");
       setError("");
-      navigate('/my-leagues'); // Assuming this is the correct path
+      navigate('/my-leagues');
     } catch (err) {
       console.error("Error creating league:", err);
       setError("Error creating the league. Please try again.");
@@ -99,31 +99,3 @@ const CreateLeague = () => {
 }
 
 export default CreateLeague;        
-
-
-
-
- // // Handle league creation
-  // const handleCreateLeague = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await api.post("/leagues/", {
-  //       name: leagueName,
-  //       owners_count: ownersCount,
-  //       description: description,
-  //       commissioner: 1,
-  //       password: leaguePassword,
-  //     });
-  //     setLeagues([...leagues, response.data]);
-  //     setLeagueName('');
-  //     setOwnersCount('');
-  //     setDescription('');
-  //     setLeaguePassword('');
-  //     setSuccessMessage("League created successfully!");
-  //     setError("");
-  //     navigate('/about'); //this will be the My Leagues Page when it is built
-  //   } catch (err) {
-  //     console.error("Error creating league:", err);
-  //     setError("Error creating the league. Please try again.");
-  //   }
-  // };

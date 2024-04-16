@@ -7,12 +7,12 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-# Create your views here.
 
-class CustomTokenObtainPairView(TokenObtainPairView):   # Create a CustomTokenObtainPairView class that inherits from the TokenObtainPairView class
+
+class CustomTokenObtainPairView(TokenObtainPairView):   
     serializer_class = CustomTokenObtainPairSerializer
 
-class registerView(generics.CreateAPIView):                         # Create a registerView class that inherits from the CreateAPIView class
+class registerView(generics.CreateAPIView):                       
     queryset = User.objects.all()   
     serializer_class = registerSerializer   
     permission_classes = (AllowAny,)    
@@ -21,7 +21,7 @@ class registerView(generics.CreateAPIView):                         # Create a r
 @permission_classes([IsAuthenticated])
 def protectedView(request): 
     output = f"Hello, {request.user.username}! You are authenticated."                  
-    return Response({'response':output}, status=status.HTTP_200_OK)   # Return a response with a message and a status code of 200
+    return Response({'response':output}, status=status.HTTP_200_OK)   
 
 @api_view(['GET'])
 def view_all_routes(request):

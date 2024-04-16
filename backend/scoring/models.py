@@ -3,7 +3,8 @@ from leagues.models import Matchup
 from rosters.models import Player
 
 
-class PlayerPerformanceStats(models.Model):
+
+class PlayerPerformance(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     matchup = models.ForeignKey(Matchup, on_delete=models.CASCADE)
     
@@ -52,3 +53,4 @@ class PlayerPerformanceStats(models.Model):
 
     def __str__(self):
         return f"{self.player.name} - Matchup {self.matchup.id}"
+    

@@ -12,7 +12,7 @@ const MyLeagues = () => {
   useEffect(() => {
     const fetchJoinedLeagues = async () => {
       try {
-        const response = await api.get("/leagues/myleagues/"); // Make sure this is your endpoint
+        const response = await api.get("/leagues/myleagues/");
         setJoinedLeagues(response.data);
       } catch (err) {
         console.error("Error fetching joined leagues:", err);

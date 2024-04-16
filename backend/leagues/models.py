@@ -49,14 +49,46 @@ class Team(models.Model):
 
     def __str__(self):
         return self.name
+
+
+    ############################# Weeks Model ###############################################
+class Week(models.Model):
+    week_number = models.IntegerField(help_text="Week number in the season")
+    start_date = models.DateField(help_text="Start date of the fantasy week", null=True, blank=True)
+    end_date = models.DateField(help_text="End date of the fantasy week", null=True, blank=True)
+    lock_time = models.DateTimeField(help_text="Deadline after which no roster changes can be made", null=True, blank=True)
+    is_active = models.BooleanField(default=False, help_text="Whether this week is currently active")
+
+    def __str__(self):
+        return f"Week {self.week_number}: {self.start_date} to {self.end_date}"
+
+    class Meta:
+        ordering = ['week_number']
+        verbose_name_plural = "Weeks"
+
+
+class NFLTeam(models.Model):
+    name = models.CharField(max_length=100, unique=True) 
+    abbreviation = models.CharField(max_length=3, unique=True)  
+
+    def __str__(self):
+        return self.name
+    
+
+class NFLGame(models.Model):
+    week = models.ForeignKey(Week, on_delete=models.CASCADE, related_name='games')
+    home_team = models.ForeignKey(NFLTeam, on_delete=models.CASCADE, related_name='home_games')
+    away_team = models.ForeignKey(NFLTeam, on_delete=models.CASCADE, related_name='away_games')
+    game_date = models.CharField(max_length=50, null=True, blank=True)
+    game_time = models.CharField(max_length=50, null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.away_team} at {self.home_team} on {self.game_date} at {self.game_time}"
     
 
 
-    ############################# Matchup Model ###############################################
-
-
 class Matchup(models.Model):
-    week = models.IntegerField()
+    week = models.ForeignKey(Week, on_delete=models.CASCADE, related_name='matchups')
     league = models.ForeignKey(
         'League', 
         on_delete=models.CASCADE, 
@@ -81,40 +113,6 @@ class Matchup(models.Model):
     date = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return f"Week {self.week}: {self.home_team} vs. {self.away_team}"
-
-
-    ############################# Weeks Model ###############################################
-class Week(models.Model):
-    week_number = models.IntegerField(help_text="Week number in the season")
-    start_date = models.DateField(help_text="Start date of the fantasy week", null=True, blank=True)
-    end_date = models.DateField(help_text="End date of the fantasy week", null=True, blank=True)
-    lock_time = models.DateTimeField(help_text="Deadline after which no roster changes can be made", null=True, blank=True)
-    is_active = models.BooleanField(default=False, help_text="Whether this week is currently active")
-
-    def __str__(self):
-        return f"Week {self.week_number}: {self.start_date} to {self.end_date}"
-
-    class Meta:
-        ordering = ['week_number']
-        verbose_name_plural = "Weeks"
-
-
-
-class NFLTeam(models.Model):
-    name = models.CharField(max_length=100, unique=True)  # 'Kansas City Chiefs'
-    abbreviation = models.CharField(max_length=3, unique=True)  # 'KC'
-
-    def __str__(self):
-        return self.name
-    
-
-class NFLGame(models.Model):
-    week = models.ForeignKey(Week, on_delete=models.CASCADE, related_name='games')
-    home_team = models.ForeignKey(NFLTeam, on_delete=models.CASCADE, related_name='home_games')
-    away_team = models.ForeignKey(NFLTeam, on_delete=models.CASCADE, related_name='away_games')
-    game_date = models.CharField(max_length=50, null=True, blank=True)
-    game_time = models.CharField(max_length=50, null=True, blank=True)
-    
-    def __str__(self):
-        return f"{self.away_team} at {self.home_team} on {self.game_date} at {self.game_time}"
+        home = self.home_team.name if self.home_team else "TBD"
+        away = self.away_team.name if self.away_team else "TBD"
+        return f"Week {self.week.week_number}: {home} vs. {away}"

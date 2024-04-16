@@ -7,7 +7,7 @@ const JoinLeague = () => {
   const [leagues, setLeagues] = useState([]);
   const [error, setError] = useState('');
   const api = useAxios();
-  const [leaguePassword, setLeaguePassword] = useState({}); // For storing passwords for private leagues
+  const [leaguePassword, setLeaguePassword] = useState({});
   const [joinedLeagues, setJoinedLeagues] = useState(new Set());
 
 
@@ -33,11 +33,11 @@ const JoinLeague = () => {
       }
   
       const response = await api.post(`/leagues/join/${league.id}/`, data);
-      if (response.status === 200 || response.status === 201) { // Adjust based on your API
-        // Remove the joined league from the leagues state
+      if (response.status === 200 || response.status === 201) {
+
         setLeagues(leagues => leagues.filter(l => l.id !== league.id));
   
-        // Optionally, if you still need to keep track of joined leagues for other purposes
+    
         setJoinedLeagues(prev => new Set([...prev, league.id]));
         alert('Successfully joined the league');
       }
@@ -57,7 +57,7 @@ const JoinLeague = () => {
             return (
           <li key={league.id}>
             {league.name} - {league.description}
-            {!joinedLeagues.has(league.id) && ( // Conditionally render based on whether the league has been joined
+            {!joinedLeagues.has(league.id) && ( 
               league.is_public ? (
                 <button onClick={() => handleJoinLeague(league)}>Join League</button>
               ) : (

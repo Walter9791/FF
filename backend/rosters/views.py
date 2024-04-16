@@ -45,7 +45,7 @@ class RosterEntryUpdateAPIView(APIView):
             for entry in updated_roster:
                 entry_id = entry.get('id')
                 entry_status = entry.get('status')
-                entry_week_id = entry.get('week')  # Directly using 'week' from the entry
+                entry_week_id = entry.get('week') 
 
                 try:
                     logger.debug(f"Looking for RosterSpot id={entry_id} with team={team} and week_id={entry_week_id}")

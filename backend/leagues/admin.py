@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import League, Team, Matchup, NFLTeam, NFLGame
+from .models import League, Team, NFLTeam, NFLGame, Matchup
+
 from .models import Week
 
 admin.site.register(League)

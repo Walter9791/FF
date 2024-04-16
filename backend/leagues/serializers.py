@@ -97,7 +97,6 @@ class LeagueSerializer(serializers.ModelSerializer):
     
 
     def create(self, validated_data):
-    # Pop 'league_password' from validated_data since it's handled separately
         league_password = validated_data.pop('league_password', None)
         owners_count = validated_data.get('owners_count')
         request = self.context.get('request')
@@ -116,17 +115,10 @@ class LeagueSerializer(serializers.ModelSerializer):
             commissioner_team = Team.objects.create(
                 name=f"{request.user.username}",  
                 league=league,
-                owner=request.user  # Assigning the commissioner as the owner
+                owner=request.user  
             )
-            # Initialize roster for the commissioner's team
             self.initialize_roster(commissioner_team)
 
-
-            # Team.objects.create(
-            #     name= f'Team {request.user.username}',
-            #     league=league,
-            #     owner=league.commissioner
-            # )
 
             for i in range(2, owners_count + 1):
                 team = Team.objects.create(
@@ -139,8 +131,6 @@ class LeagueSerializer(serializers.ModelSerializer):
         self.create_schedule(league)
         return league
     
-
-
 
 class JoinLeagueSerializer(serializers.Serializer):
         password = serializers.CharField(required=False )  
@@ -175,12 +165,12 @@ class JoinLeagueSerializer(serializers.Serializer):
             if team is None:
                 raise serializers.ValidationError('No available teams in this league')
 
-            # Assign the user to the team
+          
             team.owner = user
             team.name = f"{user.username}'s Team"
             team.save()
 
-            LeagueSerializer.create_schedule(league)
+            # LeagueSerializer.create_schedule(league)
 
             return team
 
@@ -189,14 +179,12 @@ class JoinLeagueSerializer(serializers.Serializer):
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
-        fields = ['id', 'name']  # Adjust based on the fields you want to include
+        fields = ['id', 'name'] 
 
 class MatchupSerializer(serializers.ModelSerializer):
-    # Use TeamSerializer for detailed team info (optional)
     home_team = TeamSerializer(read_only=True)
     away_team = TeamSerializer(read_only=True)
     
-    # Correcting field types for scores
     home_score = serializers.DecimalField(max_digits=5, decimal_places=2, required=False, allow_null=True)
     away_score = serializers.DecimalField(max_digits=5, decimal_places=2, required=False, allow_null=True)
 
