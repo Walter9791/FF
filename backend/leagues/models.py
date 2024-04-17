@@ -34,18 +34,8 @@ class League(models.Model):
 
 class Team(models.Model):
     name = models.CharField(max_length=100, unique=False)
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.SET_NULL,
-        null=True, 
-        blank=True, 
-        related_name='teams'
-    )
-    league = models.ForeignKey(
-        'League', 
-        on_delete=models.CASCADE, 
-        related_name='teams'
-    )
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='teams')
+    league = models.ForeignKey('League', on_delete=models.CASCADE, related_name='teams')
 
     def __str__(self):
         return self.name
@@ -89,28 +79,25 @@ class NFLGame(models.Model):
 
 class Matchup(models.Model):
     week = models.ForeignKey(Week, on_delete=models.CASCADE, related_name='matchups')
-    league = models.ForeignKey(
-        'League', 
-        on_delete=models.CASCADE, 
-        related_name='matchups'
-    )
-    home_team = models.ForeignKey(
-        Team, 
-        on_delete=models.CASCADE, 
-        related_name='home_matchups',
-        null=True,
-        blank=True
-    )
-    away_team = models.ForeignKey(
-        Team, 
-        on_delete=models.CASCADE, 
-        related_name='away_matchups',
-        null=True,
-        blank=True
-    )
+    league = models.ForeignKey('League', on_delete=models.CASCADE, related_name='matchups')
+    home_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='home_matchups', null=True, blank=True)
+    away_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='away_matchups', null=True, blank=True)
     home_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     away_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     date = models.DateField(null=True, blank=True)
+
+    def calculate_team_score(self, team):
+        # Calculate the total score for a team by summing active players' scores
+        return team.roster_spots.filter(week=self.week, status='Active').aggregate(
+            total_score=models.Sum('score')
+        )['total_score'] or 0
+
+    def update_scores(self):
+        # Update scores for both teams
+        self.home_score = self.calculate_team_score(self.home_team)
+        self.away_score = self.calculate_team_score(self.away_team)
+        self.save()
+
 
     def __str__(self):
         home = self.home_team.name if self.home_team else "TBD"

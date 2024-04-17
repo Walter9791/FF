@@ -35,31 +35,8 @@ const RosterPage = () => {
     ));
   };
 
-//   const validateRoster = () => {
-//     const requiredPositions = {
-//         QB: 1, RB: 1, WR: 2, TE: 1, X: 1, T: 2, G: 2, C: 1
-//     };
-
-//     const activePlayers = roster.filter(player => player.status === 'Active');
-//     const positionCount = {};
-
-//     activePlayers.forEach(player => {
-//         positionCount[player.position] = (positionCount[player.position] || 0) + 1;
-//     });
-
-//     return Object.entries(requiredPositions).every(([position, count]) => {
-//         return positionCount[position] === count;
-//     });
-// };
-
-  
-
 
   const saveRosterChanges = async () => {
-    // if (!validateRoster()) {
-    //   alert('Invalid roster configuration! Please ensure you have the correct number of players in each position.');
-    //   return;
-    // }
     const updatedRoster = roster
       .filter(player => player.tempStatus !== undefined) // Only include players whose status has been changed
       .map(player => ({ id: player.id, status: player.tempStatus, week: player.week }));

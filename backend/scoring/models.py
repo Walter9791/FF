@@ -6,7 +6,7 @@ from rosters.models import Player
 
 class PlayerPerformance(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    matchup = models.ForeignKey(Matchup, on_delete=models.CASCADE)
+    week = models.ForeignKey(Matchup, on_delete=models.CASCADE)
     
     # Global stats
     touchdowns = models.IntegerField(default=0)
@@ -50,6 +50,8 @@ class PlayerPerformance(models.Model):
     kick_return_yards = models.IntegerField(default=0)
     punt_return_yards = models.IntegerField(default=0)
     muffed = models.IntegerField(default=0)
+
+    unique_together = [['player', 'week']]
 
     def __str__(self):
         return f"{self.player.name} - Matchup {self.matchup.id}"

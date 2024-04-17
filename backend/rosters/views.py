@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import RosterSpot, Team
-from .serializers import RosterSpotSerializer, MyScheduleSerializer
-from leagues.models import Matchup
+from .models import RosterSpot, Team, Player
+from .serializers import RosterSpotSerializer, MyScheduleSerializer, FreeAgentSerializer
+from leagues.models import Matchup, League
 from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -64,3 +64,14 @@ class RosterEntryUpdateAPIView(APIView):
                 logger.error(f"Some roster entries were not found: {not_found_entries}")
                 return Response({'message': 'Some entries were not found', 'ids': not_found_entries}, status=status.HTTP_404_NOT_FOUND)
 
+class FreeAgentsAPIView(APIView):
+    def get(self, request, league_id):
+        try:
+            league = League.objects.get(id=league_id)
+            free_agents = Player.objects.exclude(
+                roster_spots__team__league=league
+            ).distinct()
+            serializer = FreeAgentSerializer(free_agents, many=True)
+            return Response(serializer.data)
+        except League.DoesNotExist:
+            return Response({'error': 'League not found'}, status=status.HTTP_404_NOT_FOUND)

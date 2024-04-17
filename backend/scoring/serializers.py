@@ -10,14 +10,19 @@ from rest_framework.response import Response
 
 class TeamDetailSerializer(serializers.ModelSerializer):
     active_roster_spots = serializers.SerializerMethodField()
+    bench_spots = serializers.SerializerMethodField()
 
     class Meta:
         model = Team
-        fields = ['id', 'name', 'active_roster_spots']
+        fields = ['id', 'name', 'active_roster_spots', 'bench_spots']
 
     def get_active_roster_spots(self, obj):
         active_spots = RosterSpot.objects.filter(team=obj, status='Active')
         return RosterSpotSerializer(active_spots, many=True).data
+    
+    def get_bench_spots(self, obj):
+        bench_spots = RosterSpot.objects.filter(team=obj, status='Bench')
+        return RosterSpotSerializer(bench_spots, many=True).data
     
 
 class MatchupSerializer(serializers.ModelSerializer):

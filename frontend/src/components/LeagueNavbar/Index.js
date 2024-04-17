@@ -15,8 +15,8 @@ const LeagueNavbar = ({ teamId }) => {
             <Link to={`/my-leagues/${leagueId}/teams/${teamId}/matchup`}>Matchup</Link> {" "}
             <Link to={`/my-leagues/${leagueId}/teams/${teamId}/schedule`}>My Schedule</Link> {" "}
             <Link to={`/my-leagues/${leagueId}/schedule`}>League Schedule</Link> {" "}
-            <Link to={`/my-leagues/${leagueId}/free-agency`}>Free Agency</Link> {" "}
-            <Link to={`/my-leagues/${leagueId}/rosters`}>League Rosters</Link> {" "}
+            <Link to={`/my-leagues/${leagueId}/teams/${teamId}/free-agency`}>Free Agency</Link> {" "}
+            {/* <Link to={`/my-leagues/${leagueId}/rosters`}>League Rosters</Link> {" "} */}
             <Link to={`/my-leagues/${leagueId}/teams/${teamId}/settings`}>Settings</Link>
         </nav>
     </>

@@ -1,5 +1,5 @@
 from django.db import models
-from leagues.models import Team, League, Week
+from leagues.models import Team, Week
 
 class Position(models.Model):
     POSITION_CHOICES = [
@@ -25,6 +25,7 @@ class Position(models.Model):
     offensive = models.BooleanField(default=False, null=True)
     defensive = models.BooleanField(default=False, null=True)  
     special_teams = models.BooleanField(default=False, null=True)
+
 
     def __str__(self):
         return self.get_name_display()
@@ -54,6 +55,7 @@ class RosterSpot(models.Model):
     ]
     status = models.CharField(max_length=50, choices=[('Active', 'Active'), ('Bench', 'Bench')])
     week = models.ForeignKey(Week, on_delete=models.CASCADE, null=True, blank=True)
+    score = models.DecimalField(max_digits=3, decimal_places=2, default = 0.00)
 
     class Meta:
         unique_together = ('team', 'player', 'week')

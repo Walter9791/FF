@@ -18,7 +18,8 @@ const MatchupsPage = () => {
         if (leagueId && teamId) {
           try {
             const response = await api.get(`/leagues/${leagueId}/teams/${teamId}/schedule`);
-            const sortedMatchups = response.data.sort((a, b) => a.week - b.week);
+            console.log(response.data);
+            const sortedMatchups = response.data.sort((a, b) => a.week_id - b.week_id);
             setMatchups(sortedMatchups);
           } catch (error) {
             setError("Failed to load matchup data.");
@@ -57,7 +58,7 @@ const MatchupsPage = () => {
                 <tbody>
                 {currentItems.map(matchup => (
                     <tr key={matchup.id}>
-                        <td>{matchup.week}</td>
+                        <td>{matchup.week_id}</td>
                         <td>{matchup.home_team_name}</td>
                         <td>{matchup.away_team_name}</td>
                     </tr>

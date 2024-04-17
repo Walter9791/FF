@@ -11,11 +11,12 @@ class RosterSpotSerializer(serializers.ModelSerializer):
     week = serializers.SerializerMethodField()
     opponent = serializers.SerializerMethodField()
     opponent_game_date = serializers.SerializerMethodField()
-    opponent_game_time = serializers.SerializerMethodField()  
+    opponent_game_time = serializers.SerializerMethodField() 
+    score = serializers.DecimalField(max_digits=3, decimal_places=2, default=0.00) 
 
     class Meta:
         model = RosterSpot
-        fields = ['id', 'player_name', 'position_name', 'offensive','status', 'week', 'opponent', 'opponent_game_date', 'opponent_game_time']
+        fields = ['id', 'player_name', 'position_name', 'offensive','status', 'week', 'opponent', 'opponent_game_date', 'opponent_game_time', 'score']
 
     def get_week(self, obj):
         current_week = Week.objects.filter(is_active=True).first()
@@ -43,15 +44,18 @@ class RosterSpotSerializer(serializers.ModelSerializer):
                 week=current_week
             ).first()
         return None
+     
+
+
 
 class MyScheduleSerializer(serializers.ModelSerializer):
     home_team_name = serializers.CharField(source='home_team.name', read_only=True)
     away_team_name = serializers.CharField(source='away_team.name', read_only=True)
-    week = serializers.IntegerField()
+    week_id = serializers.IntegerField(source='week.id', read_only=True)
 
     class Meta:
         model = Matchup
-        fields = ['id', 'week', 'home_team_name', 'away_team_name']
+        fields = ['id', 'week_id', 'home_team_name', 'away_team_name']
 
 
 class RosterEntrySerializer(serializers.ModelSerializer):
@@ -62,3 +66,11 @@ class RosterEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = RosterSpot
         fields = ['id', 'player_name', 'position_name', 'week', 'status']
+
+
+class FreeAgentSerializer(serializers.ModelSerializer):
+    position_name = serializers.CharField(source='position.name', read_only=True)
+
+    class Meta:
+        model = Player
+        fields = ['id', 'name', 'position_name', 'nfl_team']
