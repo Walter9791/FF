@@ -3,6 +3,7 @@ import useAxios from "../utils/useAxios";
 // import AuthContext from '../context/authContext';
 import Layout from '../components/layout';
 import { useNavigate } from 'react-router-dom';
+import { Form, Button, Container, Card, Row, Col, Alert } from 'react-bootstrap';
 
 const CreateLeague = () => {
   const [leagues, setLeagues] = useState([]);
@@ -56,44 +57,79 @@ const CreateLeague = () => {
 
   return (
     <Layout>
-      <div className='league'>
-        <h1>Create Your League</h1>
-            <form onSubmit={handleCreateLeague}>
-            <input
-                type="text"
-                placeholder="League Name"
-                value={leagueName}
-                onChange={(e) => setLeagueName(e.target.value)}
-            />
-            <select value={ownersCount} onChange={(e) => setOwnersCount(e.target.value)}>
-                <option value="">Select Owners Count</option>
-                <option value="8">8</option>
-                <option value="10">10</option>
-                <option value="12">12</option>
-            </select>
-            <input
-                type="text"
-                placeholder="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-            />
-            <select value={isPublic ? "public" : "private"} onChange={(e) => setIsPublic(e.target.value === "public")}>
-                    <option value="public">Public League</option>
-                    <option value="private">Private League</option>
-                </select>
-                {!isPublic && (
-                    <input
-                        type="password" 
-                        placeholder="League Password"
-                        value={leaguePassword}
-                        onChange={(e) => setLeaguePassword(e.target.value)}
+       <Container className="mt-3">
+        <Card>
+          <Card.Body>
+            <Card.Title className='text-center'>Create Your League</Card.Title>
+            <Form onSubmit={handleCreateLeague}>
+              <Row className="mb-3">
+                <Col md={6}>
+                  <Form.Group controlId="leagueName">
+                    <Form.Label>League Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter league name"
+                      value={leagueName}
+                      onChange={(e) => setLeagueName(e.target.value)}
                     />
-                )}
-            <button type="submit">Create League</button>
-            {error && <p className="error">{error}</p>}
-            {successMessage && <p className="success">{successMessage}</p>}
-            </form>
-        </div>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group controlId="ownersCount">
+                    <Form.Label>Owners Count</Form.Label>
+                    <Form.Control
+                      as="select"
+                      value={ownersCount}
+                      onChange={(e) => setOwnersCount(e.target.value)}
+                    >
+                      <option value="">Select Owners Count</option>
+                      <option value="8">8</option>
+                      <option value="10">10</option>
+                      <option value="12">12</option>
+                    </Form.Control>
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Form.Group className="mb-3" controlId="description">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="leagueType">
+                <Form.Label>League Type</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={isPublic ? "public" : "private"}
+                  onChange={(e) => setIsPublic(e.target.value === "public")}
+                >
+                  <option value="public">Public League</option>
+                  <option value="private">Private League</option>
+                </Form.Control>
+              </Form.Group>
+              {!isPublic && (
+                <Form.Group className="mb-3" controlId="leaguePassword">
+                  <Form.Label>League Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Enter a password for your league"
+                    value={leaguePassword}
+                    onChange={(e) => setLeaguePassword(e.target.value)}
+                  />
+                </Form.Group>
+              )}
+              <div className="d-flex justify-content-center">
+              <Button  variant="primary" type="submit">Create League</Button>
+              {error && <Alert variant="danger">{error}</Alert>}
+              {successMessage && <Alert variant="success">{successMessage}</Alert>}
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Container>
     </Layout>
  );
 }

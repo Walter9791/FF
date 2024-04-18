@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useAxios from '../../utils/useAxios';
 import Layout from '../../components/layout';
 import { useLeague } from '../../context/LeagueContext';
@@ -11,43 +11,62 @@ const FreeAgentsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedFreeAgent, setSelectedFreeAgent] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0); 
+  const [positions, setPositions] = useState([]);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
   const api = useAxios();
   const { leagueId, teamId } = useLeague();
 
-  useEffect(() => {
-    const fetchFreeAgentsAndRoster = async () => {
-      try {
+
+  const fetchFreeAgentsAndRoster = useCallback(async () => {
+    setLoading(true);
+    try{
         const [freeAgentResponse, rosterResponse] = await Promise.all([
-          api.get(`/leagues/${leagueId}/freeagents/`),
-          api.get(`/leagues/${leagueId}/teams/${teamId}/roster/`)
+            api.get(`/leagues/${leagueId}/freeagents/`),
+            api.get(`/leagues/${leagueId}/teams/${teamId}/roster/`)
         ]);
         setFreeAgents(freeAgentResponse.data);
+        console.log(freeAgentResponse.data);
         setRoster(rosterResponse.data);
-      } catch (error) {
+        console.log(rosterResponse.data);
+        setPositions([...new Set(freeAgentResponse.data.map(agent => agent.position_name))]);
+    } catch (error) {
         console.error("Failed to load data", error);
         setError("Failed to load data.");
-      } finally {
+    } finally {
         setLoading(false);
-      }
+    }
+    }, [leagueId, teamId]);
+
+
+    useEffect(() => {
+        fetchFreeAgentsAndRoster ();
+    }, [fetchFreeAgentsAndRoster]);
+
+    const handleAddToTeam = (freeAgent) => {
+        setSelectedFreeAgent(freeAgent);
     };
 
-    fetchFreeAgentsAndRoster();
-  }, [api, leagueId, teamId]);
+    const handleSelectPlayer = (player_name) => {
+        setSelectedPlayer(player_name);
+    };
 
-  const handleAddToTeam = (freeAgent) => {
-    setSelectedFreeAgent(freeAgent);
-  };
-
-  const handleDropAndAddPlayer = async (droppedPlayerId) => {
-    try {
-      const response = await api.post(`/leagues/${leagueId}/updateRoster`, {
+  const handleDropAndAddPlayer = async () => {
+    const payload = {
         addPlayerId: selectedFreeAgent.id,
-        dropPlayerId: droppedPlayerId
+        dropPlayerId: selectedPlayer.id,
+        teamId: teamId,    
+    };  
+    console.log(payload);
+
+    try {
+      const response = await api.post(`/leagues/${leagueId}/teams/${teamId}/add-drop/`, { ...payload
       });
       if (response.status === 200) {
         console.log("Roster updated successfully");
-        setSelectedFreeAgent(null); // Clear selection to refresh view
-        fetchFreeAgentsAndRoster(); // Re-fetch roster to update UI
+        setSelectedFreeAgent(null); 
+        setSelectedPlayer(null);
+        fetchFreeAgentsAndRoster(); 
       }
     } catch (error) {
       console.error("Failed to update roster", error);
@@ -58,329 +77,106 @@ const FreeAgentsPage = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
+
+  
   return (
-    <Layout showLeagueNavbar={true}>
-      <h2>Free Agents</h2>
-      {selectedFreeAgent ? (
-        <div>
-          <h3>Select a player to drop for {selectedFreeAgent.name}</h3>
-          <ul>
-            {roster.map(player => (
-              <li key={player.id}>
-                {player.name} - <button onClick={() => handleDropAndAddPlayer(player.id)}>Drop</button>
-              </li>
-            ))}
-          </ul>
-          <button onClick={() => setSelectedFreeAgent(null)}>Back to Free Agents</button>
+    <Layout showLeagueNavbar={true} customClass='schedule-container'>
+      <h2>Free Agency Transactions</h2>
+      {selectedFreeAgent && !selectedPlayer ? (
+        <RosterTable players={roster} title="Select a Player to Drop" handleSelectPlayer={handleSelectPlayer} />
+      ) : selectedFreeAgent && selectedPlayer ? (
+        <div className="confimration-page">
+          <h3>Confirm Transaction:</h3> 
+          <p>Add: {selectedFreeAgent.position_name}, {selectedFreeAgent.name}</p>  
+          <p>Drop: {selectedPlayer.position_name}, {selectedPlayer.player_name}</p>
+          <button onClick={handleDropAndAddPlayer}>Confirm</button>
+          <button customClass='cancel_button' onClick={() => {
+            setSelectedPlayer(null);
+            setSelectedFreeAgent(null);
+          }}>Cancel</button>
         </div>
-      ) : (
-        <div>
-          {freeAgents.map(freeAgent => (
-            <div key={freeAgent.id}>
-              {freeAgent.name} ({freeAgent.position_name}) - <button onClick={() => handleAddToTeam(freeAgent)}>Add</button>
-            </div>
+      ) :  (
+        <Tabs>
+        <TabList>
+          {positions.map((position, index) => (
+            <Tab key={index}>{position}</Tab>
           ))}
-        </div>
+        </TabList>
+        {positions.map((position, index) => (
+          <TabPanel key={index}>
+            <FreeAgentTable
+                players={freeAgents.filter(agent => agent.position_name === position)}
+                handleAddToTeam={handleAddToTeam}
+              />
+          </TabPanel>
+        ))}
+      </Tabs>
       )}
     </Layout>
   );
 };
 
+const RosterTable = ({ players, team, handleSelectPlayer }) => {
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>NFL Team</th>
+            <th>Drop</th> 
+          </tr>
+        </thead>
+        <tbody>
+          {players.map(player => (
+            <tr key={player.id}>
+              <td>{player.player_name}</td>
+              <td>{player.position_name}</td>
+              <td>{player.nfl_abbreviation}</td>
+              <td>
+                <button onClick={() => handleSelectPlayer(player)}>DROP</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
+const FreeAgentTable = ({ players, team, handleAddToTeam }) => {
+  return (
+    <div>
+      <h3>{}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Team</th>
+            <th>Experience</th>
+            <th>College</th>
+            <th>Add to Team</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+          {players.map(player => (
+            <tr key={player.id}>
+              <td>{player.name}</td>
+              <td>{player.nfl_abbreviation}</td>
+              <td>{player.experience}</td>
+              <td>{player.college}</td>
+              <td>
+                <button onClick={() => handleAddToTeam(player)}>Add</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+
+
 export default FreeAgentsPage;
 
-// import React, { useState, useEffect } from 'react';
-// import useAxios from '../../utils/useAxios';
-// import Layout from '../../components/layout';
-// import { useLeague } from '../../context/LeagueContext';
-// import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-// import 'react-tabs/style/react-tabs.css';
-
-// const FreeAgentsPage = () => {
-//   const [freeAgents, setFreeAgents] = useState([]);
-//   const [roster, setRoster] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState('');
-//   const [selectedFreeAgent, setSelectedFreeAgent] = useState(null);
-
-//   const api = useAxios();
-//   const { leagueId, teamId } = useLeague();
-
-//   useEffect(() => {
-//     const fetchFreeAgentsAndRoster = async () => {
-//       try {
-//         const [freeAgentResponse, rosterResponse] = await Promise.all([
-//           api.get(`/leagues/${leagueId}/freeagents/`),
-//           api.get(`/leagues/${leagueId}/teams/${teamId}/roster/`)
-//         ]);
-//         setFreeAgents(freeAgentResponse.data);
-//         setRoster(rosterResponse.data);
-//       } catch (error) {
-//         console.error("Failed to load data", error);
-//         setError("Failed to load data.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchFreeAgentsAndRoster();
-//   }, [leagueId, teamId]);
-
-//   const handleAddToTeam = (freeAgent) => {
-//     setSelectedFreeAgent(freeAgent);
-//   };
-
-//   const handleDropAndAddPlayer = async (droppedPlayerId) => {
-//     try {
-//       const response = await api.post(`/leagues/${leagueId}/updateRoster`, {
-//         addPlayerId: selectedFreeAgent.id,
-//         dropPlayerId: droppedPlayerId
-//       });
-//       if (response.status === 200) {
-//         console.log("Roster updated successfully");
-//         setSelectedFreeAgent(null); 
-//         fetchFreeAgentsAndRoster(); 
-//       }
-//     } catch (error) {
-//       console.error("Failed to update roster", error);
-//       setError("Failed to update roster.");
-//     }
-//   };
-
-//   if (loading) return <div>Loading...</div>;
-//   if (error) return <div>{error}</div>;
-
-//   const displayFreeAgents = positionName => {
-//     const start = currentPage * agentsPerPage;
-//     const end = start + agentsPerPage;
-//     return freeAgents.filter(agent => agent.position_name === positionName).slice(start, end);
-//   };
-
-//   const agentsPerPage = 25;
-
-//   if (loading) return <div>Loading...</div>;
-//   if (error) return <div>{error}</div>;
-
-  
-//   return (
-//     <Layout showLeagueNavbar={true}>
-//       <h2>Free Agents</h2>
-//       {selectedFreeAgent ? (
-//         <div>
-//           <h3>Select a player to drop for {selectedFreeAgent.name}</h3>
-//           <ul>
-//             {roster.map(player => (
-//               <li key={player.id}>
-//                 {player.name} - <button onClick={() => handleDropAndAddPlayer(player.id)}>Drop</button>
-//               </li>
-//             ))}
-//           </ul>
-//           <button onClick={() => setSelectedFreeAgent(null)}>Back to Free Agents</button> {/* Allows user to go back */}
-//         </div>
-//       ) : (
-//         <Tabs>
-//           <TabList>
-//             {positions.map((position, index) => (
-//               <Tab key={index}>{position}</Tab>
-//             ))}
-//           </TabList>
-//           {positions.map((position, index) => (
-//             <TabPanel key={index}>
-//               <FreeAgentTable
-//                 players={freeAgents.filter(agent => agent.position_name === position)}
-//                 title={`${position} Free Agents`}
-//                 handleAddToTeam={handleAddToTeam}
-//               />
-//             </TabPanel>
-//           ))}
-//         </Tabs>
-//       )}
-//     </Layout>
-//   );
-// };
-
-// const FreeAgentTable = ({ players, title, handleAddToTeam }) => {
-//   return (
-//     <div>
-//       <h3>{title}</h3>
-//       <table>
-//         <thead>
-//           <tr>
-//             <th>Name</th>
-//             <th>Position</th>
-//             <th>Add to Team</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {players.map(player => (
-//             <tr key={player.id}>
-//               <td>{player.name}</td>
-//               <td>{player.position_name}</td>
-//               <td>
-//                 <button onClick={() => handleAddToTeam(player)}>Add</button>
-//               </td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// };
-
-
-
-// export default FreeAgentsPage;
-
-
-// import React, { useState, useEffect } from 'react';
-// import useAxios from '../../utils/useAxios';
-// import Layout from '../../components/layout';
-// import { useLeague } from '../../context/LeagueContext';
-// import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-// import 'react-tabs/style/react-tabs.css';
-
-// const FreeAgentsPage = () => {
-//   const [freeAgents, setFreeAgents] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState('');
-//   const [currentPage, setCurrentPage] = useState(0);
-//   const [selectedFreeAgent, setSelectedFreeAgent] = useState(null);
-//   const [positions, setPositions] = useState([]);
-//   const api = useAxios();
-//   const { leagueId, teamId } = useLeague();
-
-//   useEffect(() => {
-//     const fetchFreeAgentsAndRoster = async () => {
-//       try {
-//         const [freeAgentResponse, rosterResponse] = await Promise.all([
-//           api.get(`/leagues/${leagueId}/freeagents/`),
-//           api.get(`/leagues/${leagueId}/teams/${teamId}/roster/`)
-//         ]);
-//         setFreeAgents(freeAgentResponse.data);
-//         setRoster(rosterResponse.data);
-//       } catch (error) {
-//         console.error("Failed to load data", error);
-//         setError("Failed to load data.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchFreeAgentsAndRoster();
-//   }, [leagueId]);
-
-//   const handleAddToTeam = (freeAgent) => {
-//     setSelectedFreeAgent(freeAgent);
-//   };
-
-//   const handleDropAndAddPlayer = async (droppedPlayerId) => {
-//     try {
-//       const response = await api.post(`/leagues/${leagueId}/updateRoster`, {
-//         addPlayerId: selectedFreeAgent.id,
-//         dropPlayerId: droppedPlayerId
-//       });
-//       if (response.status === 200) {
-//         // Refresh or update roster and free agents state based on new data
-//         console.log("Roster updated successfully");
-//       }
-//     } catch (error) {
-//       console.error("Failed to update roster", error);
-//       setError("Failed to update roster.");
-//     }
-//   };
-
-//   if (loading) return <div>Loading...</div>;
-//   if (error) return <div>{error}</div>;
-
-//   return (
-//     <Layout showLeagueNavbar={true}>
-//       <h2>Free Agents</h2>
-//       {selectedFreeAgent ? (
-//         <div>
-//           <h3>Select a player to drop for {selectedFreeAgent.name}</h3>
-//           <ul>
-//             {roster.map(player => (
-//               <li key={player.id}>
-//                 {player.name} - <button onClick={() => handleDropAndAddPlayer(player.id)}>Drop</button>
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
-//       ) : (
-//         <FreeAgentTable
-//           players={freeAgents}
-//           title="Free Agents"
-//           handleAddToTeam={handleAddToTeam}
-//         />
-//       )}
-//     </Layout>
-//   );
-// };
-
-//   const FreeAgentTable = ({ players, title }) => {
-//     return (
-//       <div>
-//         <h3>{title}</h3>
-//         <table>
-//           <thead>
-//             <tr>
-//               <th>Name</th>
-//               <th>Position</th>
-//               <th>Add to Team</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {players.map(player => (
-//               <tr key={player.id}>
-//                 <td>{player.name}</td>
-//                 <td>{player.position_name}</td>
-//                 <td>
-//                   <button onClick={() => handleAddToTeam(player.id)}>Add</button>
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-//     );
-//   };
-
-//   const agentsPerPage = 25;
-//   const displayFreeAgents = positionName => {
-//     const start = currentPage * agentsPerPage;
-//     const end = start + agentsPerPage;
-//     return freeAgents.filter(agent => agent.position_name === positionName).slice(start, end);
-//   };
-  
-//   return (
-//     <Layout showLeagueNavbar={true} customClass='schedule-container'>
-//       {loading ? (
-//         <div>Loading...</div>
-//       ) : error ? (
-//         <div>{error}</div>
-//       ) : (
-//         <div>
-//           <h2>Free Agents</h2>
-//           <Tabs>
-//             <TabList>
-//               {positions.map((position, index) => (
-//                 <Tab key={index}>{position}</Tab>
-//               ))}
-//             </TabList>
-//             {positions.map((position, index) => (
-//               <TabPanel key={index}>
-//                 <FreeAgentTable
-//                   players={displayFreeAgents(position)}
-//                   title={`${position} Free Agents`}
-//                 />
-//                 <button disabled={currentPage === 0} onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
-//                 <button disabled={displayFreeAgents(position).length < agentsPerPage} onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
-//               </TabPanel>
-//             ))}
-//           </Tabs>
-//         </div>
-//       )}
-//     </Layout>
-//   );
-
-
-// export default FreeAgentsPage;

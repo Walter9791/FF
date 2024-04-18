@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import useAxios from "../utils/useAxios";
 import Layout from '../components/layout';
 import { useParams } from 'react-router-dom';
-import { useLeague } from '../context/LeagueContext'; // Import useLeague hook
+import { useLeague } from '../context/LeagueContext';
+import { Card, ListGroup, Table, Row, Col, Container } from 'react-bootstrap';
 
 const LeagueHomePage = () => {
   const [league, setLeague] = useState(null);
@@ -40,22 +41,41 @@ const LeagueHomePage = () => {
 
   return (
     <Layout showLeagueNavbar={true} teamId={league.user_team_id}>
-      <div className='form-container'>
-        <h2>League Home Page</h2>
-        {league ? (
-          <div>
-            <h3>{league.name}</h3>
-            <p>League Description: {league.description}</p>
-            {/* <p>Owners Count: {league.owners_count}</p> */}
-            <p>Commissioner: {league.commissioner_name}</p>
-            <p>Members: {league.team_names && league.team_names.join(', ')}</p>
-            <p>Team ID: {league.user_team_id}</p>
-          </div>
-        ) : (
-          <p>Loading...</p>
-        )}
-        {error && <p>{error}</p>}
-      </div>
+     <Container className="mt-3 my-league-container">
+        <Card>
+          <Card.Body>
+            <Card.Title>{league.name}</Card.Title>
+            <Card.Text>
+              League Description: {league.description}
+              <br />
+              Commissioner: {league.commissioner_name}
+            </Card.Text>
+            <Table striped bordered hover className="mt-3">
+              <thead>
+                <tr>
+                  <th>Team</th>
+                  <th>Wins</th>
+                  <th>Losses</th>
+                  <th>Points For</th>
+                  <th>Points Against</th>
+                </tr>
+              </thead>
+              <tbody>
+                {league.team_names?.map((team, index) => (
+                  <tr key={index}>
+                    <td>{team}</td>
+                    <td>{/* Wins data placeholder */}</td>
+                    <td>{/* Losses data placeholder */}</td>
+                    <td>{/* Points for data placeholder */}</td>
+                    <td>{/* Points against data placeholder */}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+        {error && <div className="alert alert-danger mt-2">{error}</div>}
+      </Container>
     </Layout>
   );
 };

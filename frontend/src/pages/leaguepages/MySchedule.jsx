@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useAxios from '../../utils/useAxios';
 import Layout from '../../components/layout';
 import ReactPaginate from 'react-paginate';
-import { useLeague } from '../../context/LeagueContext'; // Adjust the import path as needed
+import { useLeague } from '../../context/LeagueContext'; 
 
 const MatchupsPage = () => {
     const { leagueId, teamId } = useLeague();
@@ -44,7 +44,6 @@ const MatchupsPage = () => {
 
   return (
     <Layout showLeagueNavbar={true} customClass='schedule-container'>
-        {/* <div className="schedule-container"> */}
         <div>
             <h2>Season Schedule</h2>
             <table>

@@ -12,11 +12,12 @@ class RosterSpotSerializer(serializers.ModelSerializer):
     opponent = serializers.SerializerMethodField()
     opponent_game_date = serializers.SerializerMethodField()
     opponent_game_time = serializers.SerializerMethodField() 
-    score = serializers.DecimalField(max_digits=3, decimal_places=2, default=0.00) 
+    score = serializers.DecimalField(max_digits=3, decimal_places=2, default=0.00)
+    nfl_abbreviation = serializers.CharField(source='player.nfl_team.abbreviation', read_only=True) 
 
     class Meta:
         model = RosterSpot
-        fields = ['id', 'player_name', 'position_name', 'offensive','status', 'week', 'opponent', 'opponent_game_date', 'opponent_game_time', 'score']
+        fields = ['id', 'player_name', 'position_name', 'offensive','status', 'week', 'opponent', 'opponent_game_date', 'opponent_game_time', 'score', 'nfl_abbreviation']
 
     def get_week(self, obj):
         current_week = Week.objects.filter(is_active=True).first()
@@ -70,7 +71,8 @@ class RosterEntrySerializer(serializers.ModelSerializer):
 
 class FreeAgentSerializer(serializers.ModelSerializer):
     position_name = serializers.CharField(source='position.name', read_only=True)
+    nfl_abbreviation = serializers.CharField(source='nfl_team.abbreviation', read_only=True)
 
     class Meta:
         model = Player
-        fields = ['id', 'name', 'position_name', 'nfl_team']
+        fields = ['id', 'name', 'position_name', 'nfl_abbreviation', 'experience', 'college']

@@ -32,10 +32,10 @@ const SchedulePage = () => {
 
     fetchSchedule();
   }, [leagueId, teamId ]);
-  const pageCount = Math.ceil(schedule.length / itemsPerPage); // Calculate total page count
+  const pageCount = Math.ceil(schedule.length / itemsPerPage); 
   
   const handlePageClick = ({ selected: selectedPage }) => {
-    setCurrentPage(selectedPage); // Update current page
+    setCurrentPage(selectedPage); 
   };
 
   const currentItems = schedule.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);

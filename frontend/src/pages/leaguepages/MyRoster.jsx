@@ -4,7 +4,6 @@ import Layout from '../../components/layout';
 import { useLeague } from '../../context/LeagueContext';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-
 const RosterPage = () => {
   const [roster, setRoster] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,22 +41,19 @@ const RosterPage = () => {
       .map(player => ({ id: player.id, status: player.tempStatus, week: player.week }));
   
     const payload = { updatedRoster };
-    console.log('Sending the following payload to the backend:', payload); // Log the payload
+    console.log('Sending the following payload to the backend:', payload); 
   
     try {
       const response = await api.post(`leagues/${leagueId}/teams/${teamId}/roster/change/`, payload);
-      console.log(response.data); // Handle response appropriately
+      console.log(response.data); 
       alert('Roster updated successfully!');
-          // Update the main roster state to reflect the saved changes
       setRoster(currentRoster =>
         currentRoster.map(player => ({
           ...player,
           status: player.tempStatus ? player.tempStatus : player.status,
-          tempStatus: undefined, // Clear tempStatus after saving
+          tempStatus: undefined, 
         }))
       );
-
-      // alert('Roster updated successfully!');
 
 
     } catch (error) {
@@ -113,9 +109,6 @@ const RosterPage = () => {
 
   if (loading) return <div>Loading roster...</div>;
   if (error) return <div>{error}</div>;
-
-  // const offensivePlayers = roster.filter(player => player.offensive);
-  // const defensivePlayers = roster.filter(player => !player.offensive);
 
   const offensivePositionOrder = ['QB', 'WR', 'WR', 'RB', 'TE', 'X', 'T', 'T', 'G', 'G', 'C'];
   const defensivePositionOrder = ['DT', 'DE', 'LB', 'CB', 'S', 'K', 'P'];

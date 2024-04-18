@@ -24,7 +24,6 @@ class LeagueDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance)
         serialized_data = serializer.data
 
-        # Now, add the teamId for the current user and league
         user_team = Team.objects.filter(league=instance, owner=request.user).first()
         team_id = user_team.id if user_team else None
         serialized_data['user_team_id'] = team_id

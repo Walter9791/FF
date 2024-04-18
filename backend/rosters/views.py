@@ -4,9 +4,11 @@ from .models import RosterSpot, Team, Player
 from .serializers import RosterSpotSerializer, MyScheduleSerializer, FreeAgentSerializer
 from leagues.models import Matchup, League
 from django.db.models import Q
-from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework import status
+from django.db import transaction
+from rest_framework import serializers
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,7 +21,6 @@ class TeamRosterAPIView(APIView):
         serializer = RosterSpotSerializer(roster_spots, many=True)
         return Response(serializer.data)
 
-
 class TeamScheduleAPIView(APIView):
     def get(self, request, league_id, team_id):
         team_id = team_id
@@ -27,7 +28,6 @@ class TeamScheduleAPIView(APIView):
         serializer = MyScheduleSerializer(team_schedule, many=True) 
         return Response(serializer.data)
     
-
 class RosterEntryUpdateAPIView(APIView):
         def post(self, request, league_id, team_id):
             logger.debug("Request reached RosterEntryUpdateAPIView")
@@ -75,3 +75,90 @@ class FreeAgentsAPIView(APIView):
             return Response(serializer.data)
         except League.DoesNotExist:
             return Response({'error': 'League not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+class FreeAgencyTransaction(APIView):
+    def post(self, request, *args, **kwargs):
+        drop_roster_spot_id = request.data.get('dropPlayerId')
+        add_roster_spot_id = request.data.get('dropPlayerId')
+        player_to_add_id = request.data.get('addPlayerId')
+        logger.debug(f"Drop roster spot ID: {drop_roster_spot_id}")
+        logger.debug(f"Add roster spot ID: {add_roster_spot_id}")
+        logger.debug(f"Player to add ID: {player_to_add_id}")
+
+        try:
+            with transaction.atomic():
+                
+                if drop_roster_spot_id:
+                    roster_spot_to_drop = RosterSpot.objects.get(id=drop_roster_spot_id)
+                    roster_spot_to_drop.player = None
+                    roster_spot_to_drop.save()
+                    logger.debug(f"Player dropped from roster spot ID: {drop_roster_spot_id}")
+
+            
+                if add_roster_spot_id:
+                    roster_spot_to_add = RosterSpot.objects.get(id=add_roster_spot_id)
+                    roster_spot_to_add.player_id = player_to_add_id
+                    roster_spot_to_add.position_id = Player.objects.get(id=player_to_add_id).position_id   
+                    roster_spot_to_add.save()
+                    logger.debug(f"Player with ID {player_to_add_id} added to roster spot ID: {add_roster_spot_id}")
+
+                return Response({'message': 'Roster update successful'}, status=status.HTTP_200_OK)
+
+        except RosterSpot.DoesNotExist:
+            logger.error("Roster spot not found")
+            return Response({'error': 'Roster spot not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Unexpected error during roster update: {e}")
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+# class FreeAgencyTransaction(APIView):
+#     def post(self, request, *args, **kwargs):
+#         serializer_context = {
+#             'request': request,
+#         }
+#         team = request.data.get('team')
+#         add_player_id = request.data.get('addPlayerId')
+#         drop_player_id = request.data.get('dropPlayerId')
+
+#         logger.debug(f"Team ID: {team}")
+#         logger.debug(f"Add player ID: {add_player_id}")
+#         logger.debug(f"Drop player ID: {drop_player_id}")
+#         logger.debug(f"Request data: {request.data}")
+
+#         try:
+#             with transaction.atomic():
+#                 # Handle dropping the player
+#                 # Ensure we are getting the correct player based on team_id and player_id
+#                 dropped_player = get_object_or_404(Player, id=drop_player_id, team_id=team_id)
+#                 logger.debug(f"Dropped player: {dropped_player}")
+#                 drop_serializer = RosterSpotSerializer(dropped_player, data={'team': None}, context=serializer_context, partial=True)
+#                 if drop_serializer.is_valid():
+#                     drop_serializer.save()
+#                     logger.debug(f"Player dropped: {dropped_player}")
+#                 else:
+#                     logger.error(f"Error dropping player: {drop_serializer.errors}")
+
+#                 # Handle adding the new player to the team
+#                 added_player = get_object_or_404(Player, id=add_player_id)
+#                 logger.debug(f"Added player: {added_player}")
+#                 add_serializer = RosterSpotSerializer(added_player, data={'team': team_id}, context=serializer_context, partial=True)
+#                 if add_serializer.is_valid():
+#                     add_serializer.save()
+#                     logger.debug(f"Player added: {added_player}")
+#                 else:
+#                     logger.error(f"Error adding player: {add_serializer.errors}")
+#                     raise serializers.ValidationError(add_serializer.errors)
+
+#                 return Response({'message': 'Roster updated successfully'}, status=status.HTTP_200_OK)
+
+#         except Player.DoesNotExist:
+#             logger.error("Player not found")
+#             return Response({'error': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+#         except serializers.ValidationError as e:
+#             logger.error(f"Validation error: {e}")
+#             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+#         except Exception as e:
+#             logger.error(f"Error: {e}")
+#             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

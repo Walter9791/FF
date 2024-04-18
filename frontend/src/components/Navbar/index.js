@@ -15,7 +15,7 @@ const Navbar = ({}) => {
 
     return (
       <nav className="navigation">
-        <h1>DOPP</h1>
+        <h2>DOPP</h2>
         <div className="nav-items left">
           <a href="/">Home</a>
           <a href="/about">About</a>

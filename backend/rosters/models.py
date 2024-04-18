@@ -36,9 +36,9 @@ class Player(models.Model):
     position = models.ForeignKey(Position, on_delete=models.CASCADE)  # Could also be a ForeignKey to a Position model
     height = models.CharField(max_length=10) 
     weight = models.IntegerField()  
-    experience= models.IntegerField(null=True, blank=True)  # Nullable if not applicable
-    college = models.CharField(max_length=100, null=True, blank=True)  # Nullable if not applicable
-    nfl_team = models.CharField(max_length=100, null=True, blank=True)  
+    experience= models.IntegerField(null=True, blank=True)  
+    college = models.CharField(max_length=100, null=True, blank=True)  
+    nfl_team = models.ForeignKey('leagues.NFLTeam', on_delete=models.CASCADE, null=True, blank=True,  related_name='players')   
 
     def __str__(self):
         return f"{self.name} ({self.position})"

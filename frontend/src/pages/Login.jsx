@@ -2,13 +2,13 @@ import React, {useContext} from 'react'
 import { Link } from 'react-router-dom'
 import AuthContext from '../context/authContext'
 import Layout from '../components/layout'
+import { Container, Form, Button, Card } from 'react-bootstrap'
 
 const Login = () => {
   const {loginUser} = useContext(AuthContext)
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // console.log(e.target)
 
     const email = e.target.email.value
     const password = e.target.password.value
@@ -16,34 +16,36 @@ const Login = () => {
     loginUser(email, password)
   }
   return (
-    <Layout customClass=''>
-    <div className='login'>
-      <h1>Login</h1>
-      <p>Sign Into Your Account</p>
+    <Layout >
+     <Container style={{ maxWidth: '600px', marginTop: '20px' }}>
+        <Card>
+          <Card.Body>
+            <h1 className="text-center mb-4">Login</h1>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3">
+                <Form.Label><strong>Email</strong></Form.Label>  {/* Make the label bold */}
+                <Form.Control type="email" name="email" required />
+              </Form.Group>
 
-      <form onSubmit={handleSubmit}>
-        
-        <label>Email:</label>
-        <input 
-          type="email" 
-          name="email"
-          required />
+              <Form.Group className="mb-3">
+                <Form.Label><strong>Password</strong></Form.Label>  {/* Make the label bold */}
+                <Form.Control type="password" name="password" required />
+              </Form.Group>
 
-        <label>Password:</label>
-        <input 
-          type="password" 
-          name="password"
-          required />
+              <div className="d-grid gap-2">
+                <Button variant="success" type="submit" size="lg">
+                  Login
+                </Button>
+              </div>
 
-        <div className='btn-container'>
-          <button type='submit'>Login</button>
-        </div>
-        <span>Don't Have an Account?     
-          <Link to="/signup">Sign Up!</Link>
-        </span>
-
-      </form>
-    </div>
+              <div className="mt-3 text-center">
+                Don't Have an Account?
+                <Link to="/signup" className="ms-2">Sign Up!</Link>
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Container>
     </Layout>
   )
 }

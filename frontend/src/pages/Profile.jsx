@@ -4,9 +4,11 @@ import { jwtDecode } from 'jwt-decode'
 import { Link } from 'react-router-dom'
 import AuthContext from '../context/authContext'
 import Layout from '../components/layout'
+import {Form, Button, Container, Card } from 'react-bootstrap'
 
 const Profile = () => {
   const [response, setResponse] = useState("")
+  const [editable, setEditable] = useState(false)
   const api = useAxios();
   const token = localStorage.getItem("authTokens")
   const {logoutUser} = useContext(AuthContext)
@@ -19,6 +21,7 @@ const Profile = () => {
   let first_name = decode.first_name
   let last_name = decode.last_name
   
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,26 +42,45 @@ const Profile = () => {
 
   return (
     <Layout>
-    <div className='form-container'>
-      <h1>PROFILE</h1>
-      <p>Welcome, {username}</p>
-      <span>Your Information:</span>
-      <br />
-      <span>Username: {username}</span>
-      <br />
-      <span>First Name: {first_name}</span>
-      <br />
-      <span>Last Name: {last_name}</span>
-      <br />
-      <span>Email: {email}</span>
-      <br /><br />
-      <span>{response}</span>
-      <br /><br />
-      <Link to="/">Home</Link>
-      <br />
-      <Link to="/" onClick={logoutUser}>Logout</Link>
-      
-    </div>
+    <Container style={{ minWidth: '400px', marginTop: '20px' }}>
+        <Card>
+          <Card.Body>
+            <Card.Title>{editable ? 'Edit Profile' : 'View Profile'}</Card.Title>
+            <Form inline>
+              <Form.Group className="mb-3">
+                <Form.Label>Username:</Form.Label>
+                <Form.Control type="text" defaultValue={username} readOnly={!editable} />
+              </Form.Group>
+              
+              <Form.Group className="mb-3">
+                <Form.Label>Email:</Form.Label>
+                <Form.Control type="email" defaultValue={email} readOnly={!editable} />
+              </Form.Group>
+              
+              <Form.Group className="mb-3">
+                <Form.Label>First Name:</Form.Label>
+                <Form.Control type="text" defaultValue={first_name} readOnly={!editable} />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Last Name:</Form.Label>
+                <Form.Control type="text" defaultValue={last_name} readOnly={!editable} />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label></Form.Label>
+                <p className="pt-2">{response || 'No additional information provided.'}</p>
+              </Form.Group>
+              <div className="mb-3">
+                <Button variant="secondary" onClick={() => setEditable(!editable)} className="mr-2">
+                  {editable ? 'Cancel' : 'Edit'}
+                </Button>
+                {editable && <Button variant="primary" type="submit">Save Changes</Button>}
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Container>
     </Layout>
   )
 }
