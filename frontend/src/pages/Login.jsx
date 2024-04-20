@@ -23,12 +23,12 @@ const Login = () => {
             <h1 className="text-center mb-4">Login</h1>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label><strong>Email</strong></Form.Label>  {/* Make the label bold */}
+                <Form.Label><strong>Email</strong></Form.Label>  
                 <Form.Control type="email" name="email" required />
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label><strong>Password</strong></Form.Label>  {/* Make the label bold */}
+                <Form.Label><strong>Password</strong></Form.Label> 
                 <Form.Control type="password" name="password" required />
               </Form.Group>
 

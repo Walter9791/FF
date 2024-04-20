@@ -41,27 +41,9 @@ export const AuthProvider = ({ children }) => {
             setUser(jwtDecode(data.access))
             localStorage.setItem("authTokens", JSON.stringify(data));
             navigate("/")
-            swal.fire({
-                title: "Login Success",
-                icon: "success",
-                toast: true,
-                timer: 4000,
-                position: 'bottom-right',
-                timerProgressBar: false,
-                showConfirmButton: false
-            })
         } else {
             console.log(response.status)
             console.log("An Error Occured")
-            swal.fire({
-                title: "Email or password incorrect",
-                icon: "error",
-                toast: true,
-                timer: 4000,
-                position: 'top-right',
-                timerProgressBar: false,
-                showConfirmButton: false
-            })
         }
     }    
     const registerUser = async (first_name, last_name, email, username, password, password2) => {
@@ -77,28 +59,28 @@ export const AuthProvider = ({ children }) => {
 
         if (response.status === 201){
             navigate('/login')
-            swal.fire({
-                title: "Registration Success",
-                icon: "success",
-                toast: true,
-                timer: 4000,
-                position: 'bottom-right',
-                timerProgressBar: false,
-                showConfirmButton: false
-            })
+            // swal.fire({
+            //     title: "Registration Success",
+            //     icon: "success",
+            //     toast: true,
+            //     timer: 4000,
+            //     position: 'bottom-right',
+            //     timerProgressBar: false,
+            //     showConfirmButton: false
+            // })
         } else {
             console.log(response.status)
             console.log("An Error Occured")
             console.log(data)
-            swal.fire({
-                title: "There was a server error",
-                icon: "error",
-                toast: true,
-                timer: 4000,
-                position: 'bottom-right',
-                timerProgressBar: false,
-                showConfirmButton: false
-            })
+            // swal.fire({
+            //     title: "There was a server error",
+            //     icon: "error",
+            //     toast: true,
+            //     timer: 4000,
+            //     position: 'bottom-right',
+            //     timerProgressBar: false,
+            //     showConfirmButton: false
+            // })
         }
     }      
 
@@ -107,15 +89,15 @@ export const AuthProvider = ({ children }) => {
         setUser(null)
         localStorage.removeItem("authTokens")
         navigate('/')
-        swal.fire({
-            title: "You have been logged out",
-            icon: "success",
-            toast: true,
-            timer: 4000,
-            position: 'bottom-right',
-            timerProgressBar: false,
-            showConfirmButton: false
-        })
+        // swal.fire({
+        //     title: "You have been logged out",
+        //     icon: "success",
+        //     toast: true,
+        //     timer: 4000,
+        //     position: 'bottom-right',
+        //     timerProgressBar: false,
+        //     showConfirmButton: false
+        // })
     }
 
     const contextData = {

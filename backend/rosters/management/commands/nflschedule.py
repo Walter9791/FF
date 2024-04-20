@@ -19,17 +19,10 @@ class Command(BaseCommand):
                 time_str = row['Time (ET)']  # e.g., "20:20"
                 away_team_name = row['Away Team']
                 home_team_name = row['Home Team']
-
-                # Find the Week object
                 week, _ = Week.objects.get_or_create(week_number=week_number)
-                
-                # Get or create the teams
                 away_team = NFLTeam.objects.get_or_create(name=away_team_name)[0]
                 home_team = NFLTeam.objects.get_or_create(name=home_team_name)[0]
 
-            
-
-                # Create or get the game
                 NFLGame.objects.get_or_create(
                     week=week,
                     home_team=home_team,

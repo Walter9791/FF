@@ -21,7 +21,7 @@ SCORING_RULES = {
         'sack_given' : -3,
         'qb_hit' : -2, 
         'qb_hurry' : -1, 
-        # 'qb_pressure' : lambda pressures : pressures/-.5,
+        'qb_pressure' : lambda pressures : pressures/-.5,
     }, 
 
     "DEFENSE" : {

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import League, Team, Matchup   
+from .models import League, Team, Matchup, Week   
 from django.http import JsonResponse
 from django.db import transaction
 from itertools import combinations
@@ -35,25 +35,20 @@ class LeagueSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def initialize_roster(team):
-        # Example roster structure based on your description
         ROSTER_STRUCTURE = {
             'QB': 1, 'RB': 1, 'WR': 2, 'X': 1, 'TE': 1, 'T': 2, 'G': 2, 'C': 1,
             'DT': 2, 'DE' : 2, 'LB': 3, 'CB': 2, 'S': 2,
             'K': 1, 'P': 1
         }
         TOTAL_SPOTS = 51
-        # Create roster spots for each required position
         with transaction.atomic():
-        # Create roster spots for each required position
             for position_code, count in ROSTER_STRUCTURE.items():
                 position, created = Position.objects.get_or_create(name=position_code)
                 for _ in range(count):
                     RosterSpot.objects.create(team=team, position=position, status='Active')
 
-            # Calculate remaining spots for bench
             bench_spots = TOTAL_SPOTS - sum(ROSTER_STRUCTURE.values())
 
-            # Initialize bench spots without specifying a position
             for _ in range(bench_spots):
                 RosterSpot.objects.create(team=team, position=None, status='Bench')
 
@@ -62,28 +57,28 @@ class LeagueSerializer(serializers.ModelSerializer):
     
     @staticmethod
     def create_schedule(league):
-        print("schedule for league:", league.name)
+        print("Schedule for league:", league.name)
         teams = list(league.teams.all())
         print(f"{len(teams)} teams in league {league.name}")
         
-        weeks = 15 
+        weeks = 15
         matchups_per_week = len(teams) // 2
 
         with transaction.atomic():
             try:
-                for week in range(1, weeks + 1):
-                    random.shuffle(teams) 
+                for week_number in range(1, weeks + 1):
+                    week, created = Week.objects.get_or_create(week_number=week_number, defaults={'start_date': None, 'end_date': None, 'lock_time': None, 'is_active': False})
+                    random.shuffle(teams)
                     for i in range(matchups_per_week):
-                        home_team = teams[i * 2] 
-                        away_team = teams[i * 2 + 1] ##if i * 2 + 1 < len(teams) else None --- not sure if needed 
+                        home_team = teams[i * 2]
+                        away_team = teams[i * 2 + 1] if i * 2 + 1 < len(teams) else None
                         if away_team:
-                            #print(f"Week {week}: {home_team.name} vs {away_team.name}")  --Console log
                             Matchup.objects.create(
-                                week=week,
+                                week=week,  
                                 league=league,
                                 home_team=home_team,
                                 away_team=away_team
-                            )   
+                            )  
             except Exception as e:
                 logger.error(f"Error creating schedule: {e}")    
 
@@ -101,15 +96,14 @@ class LeagueSerializer(serializers.ModelSerializer):
         owners_count = validated_data.get('owners_count')
         request = self.context.get('request')
 
-        # Create the league instance including the 'commissioner' directly
+        
         league = League.objects.create(**validated_data)
         
-        # If the league is not public and a password has been provided, set it
+    
         if not validated_data.get('is_public', True) and league_password:
             league.set_password(league_password)
-            league.save()   # Remember to save the league after setting the password
+            league.save()   
 
-        # Create teams for the league
         with transaction.atomic():
         # Create the commissioner's team and initialize its roster immediately
             commissioner_team = Team.objects.create(

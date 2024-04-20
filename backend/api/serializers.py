@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):  # Create a UserSerializer cl
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):   # Create a CustomTokenObtainPairSerializer class that inherits from the TokenObtainPairSerializer class
     @classmethod
     def get_token(cls, user):
-        token = super().get_token(user)             # Call the get_token method of the parent class
+        token = super().get_token(user)            
         
         token['email'] = user.email                              
         token['username'] = user.username          

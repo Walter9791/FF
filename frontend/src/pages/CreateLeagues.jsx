@@ -17,7 +17,6 @@ const CreateLeague = () => {
   const [isPublic, setIsPublic] = useState(true); // Default to public
   const api = useAxios();
 
-
   const handleCreateLeague = async (e) => {
     e.preventDefault();
     const payload = {
@@ -25,9 +24,7 @@ const CreateLeague = () => {
         owners_count: parseInt(ownersCount, 10),
         description: description,
         is_public: isPublic,
-        // league_password: leaguePassword,
     };
-
     // Only add password to payload if the league is private
     if (!isPublic && leaguePassword) {
         payload.league_password = leaguePassword;

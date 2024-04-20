@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import useAxios from "../utils/useAxios";
 import Layout from '../components/layout';
+import { Card, Button, Form, Container, Row, Col, Alert } from 'react-bootstrap';
 
 const JoinLeague = () => {
   const [leagues, setLeagues] = useState([]);
@@ -49,33 +50,42 @@ const JoinLeague = () => {
   
   return (
     <Layout >
-      <div className='form-container'>
-        <h2>Leagues</h2>
-        <ul>
-        {leagues.map((league) => {
-            console.log(`League: ${league.name}, is_public: ${league.is_public}`);
-            return (
-          <li key={league.id}>
-            {league.name} - {league.description}
-            {!joinedLeagues.has(league.id) && ( 
-              league.is_public ? (
-                <button onClick={() => handleJoinLeague(league)}>Join League</button>
-              ) : (
-                <div>
-                  <input 
-                    type="password" 
-                    placeholder="League Password" 
-                    onChange={(e) => setLeaguePassword({ ...leaguePassword, [league.id]: e.target.value })} 
-                  />
-                  <button onClick={() => handleJoinLeague(league)}>Join Private League</button>
-                </div>
-              )
-            )}
-          </li>
-          )})}
-        </ul>
-        {error && <p>{error}</p>} 
-      </div>
+      <Container>
+        <h2 className='text-center mb-4'>Join a League</h2>
+        {/* <Row xs={1} md={2} lg={3} className="g-4"> */}
+          {leagues.map((league) => (
+            <Col key={league.id}>
+              <Card>
+                <Card.Body>
+                  <Card.Title className='card-title text-center'>{league.name}</Card.Title>
+                  <Card.Text className='card-text'>
+                    {league.description}
+                  </Card.Text>
+                  {!joinedLeagues.has(league.id) && (
+                    league.is_public ? (
+                      <Button variant="primary" onClick={() => handleJoinLeague(league)}>Join League</Button>
+                    ) : (
+                      <Form>
+                        <Form.Group>
+                          <Form.Control 
+                            type="password" 
+                            placeholder="League Password" 
+                            onChange={(e) => setLeaguePassword({ ...leaguePassword, [league.id]: e.target.value })}
+                          />
+                        </Form.Group>
+                        <div className="d-flex justify-content-center mt-2">
+                        <Button variant="success align-center" onClick={() => handleJoinLeague(league)}>Join Private League</Button>
+                        </div>
+                      </Form>
+                    )
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        {/* </Row> */}
+        {error && <Alert variant="danger">{error}</Alert>}
+      </Container>
     </Layout>
   );
 };
